@@ -33,3 +33,20 @@ composer.lock
 /behat.yml
 */yui/build/*/*-coverage.js
 /lib/yuilib/*/build/*/*-coverage.js
+
+# MMCC Moodle Plugin list
+blocks/attendance
+blocks/moodleblock
+blocks/quickset
+blocks/sharing_cart
+filter/nanogong
+lib/editor/tinymce/plugins/hideabox
+local/loginas
+mod/attendance
+mod/bigbluebuttonbn
+mod/hotpot
+mod/lightboxgallery
+mod/nanogong
+mod/oublog
+mod/recordingsbn
+theme/essential
