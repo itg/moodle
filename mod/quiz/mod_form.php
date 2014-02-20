@@ -77,6 +77,8 @@ class mod_quiz_mod_form extends moodleform_mod {
         // -------------------------------------------------------------------------------
         $mform->addElement('header', 'timing', get_string('timing', 'quiz'));
 
+        $mform->setExpanded('timing');
+
         // Open and close dates.
         $mform->addElement('date_time_selector', 'timeopen', get_string('quizopen', 'quiz'),
                 array('optional' => true, 'step' => 1));
@@ -114,6 +116,8 @@ class mod_quiz_mod_form extends moodleform_mod {
         // Grade settings.
         $this->standard_grading_coursemodule_elements();
 
+        $mform->setExpanded('modstandardgrade');
+
         $mform->removeElement('grade');
         $mform->addElement('hidden', 'grade', $quizconfig->maximumgrade);
         $mform->setType('grade', PARAM_FLOAT);
@@ -138,6 +142,8 @@ class mod_quiz_mod_form extends moodleform_mod {
 
         // -------------------------------------------------------------------------------
         $mform->addElement('header', 'layouthdr', get_string('layout', 'quiz'));
+
+        $mform->setExpanded('layouthdr');
 
         // Shuffle questions.
         $shuffleoptions = array(
@@ -193,6 +199,8 @@ class mod_quiz_mod_form extends moodleform_mod {
         // -------------------------------------------------------------------------------
         $mform->addElement('header', 'interactionhdr', get_string('questionbehaviour', 'quiz'));
 
+        $mform->setExpanded('interactionhdr');
+
         // Shuffle within questions.
         $mform->addElement('selectyesno', 'shuffleanswers', get_string('shufflewithin', 'quiz'));
         $mform->addHelpButton('shuffleanswers', 'shufflewithin', 'quiz');
@@ -223,6 +231,8 @@ class mod_quiz_mod_form extends moodleform_mod {
         $mform->addElement('header', 'reviewoptionshdr',
                 get_string('reviewoptionsheading', 'quiz'));
         $mform->addHelpButton('reviewoptionshdr', 'reviewoptionsheading', 'quiz');
+
+        $mform->setExpanded('reviewoptionshdr');
 
         // Review options.
         $this->add_review_options_group($mform, $quizconfig, 'during',
