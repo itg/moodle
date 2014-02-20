@@ -27,6 +27,12 @@
 require('../config.php');
 require_once('lib.php');
 
+//Allow redirection to course pages
+if( isset($_GET['courseid']) && $_GET['courseid'] <> ""){
+$SESSION->wantsurl = $CFG->wwwroot.'/course/view.php?id='.$_GET['courseid'];
+}
+
+
 // Try to prevent searching for sites that allow sign-up.
 if (!isset($CFG->additionalhtmlhead)) {
     $CFG->additionalhtmlhead = '';
