@@ -133,7 +133,7 @@ if ($mygroupid > 0 AND $feedback->anonymous == FEEDBACK_ANONYMOUS_YES) {
     }
 }
 
-echo '<div><table width="80%" cellpadding="10"><tr><td>';
+echo '<div><table width="100%" cellpadding="10"><tr><td>';
 if ($check_anonymously) {
     $itemnr = 0;
     //print the items in an analysed form
