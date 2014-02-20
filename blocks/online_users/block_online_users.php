@@ -149,12 +149,8 @@ class block_online_users extends block_base {
             $users = array();
         }
 
-        if (count($users) < 50) {
-            $usercount = "";
-        } else {
-            $usercount = $DB->count_records_sql($csql, $params);
-            $usercount = ": $usercount";
-        }
+        $usercount = $DB->count_records_sql($csql, $params);
+        $usercount = ": $usercount";
 
         $this->content->text = "<div class=\"info\">(".get_string("periodnminutes","block_online_users",$minutes)."$usercount)</div>";
 
