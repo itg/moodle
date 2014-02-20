@@ -34,19 +34,33 @@ composer.lock
 */yui/build/*/*-coverage.js
 /lib/yuilib/*/build/*/*-coverage.js
 
-# MMCC Moodle Plugin list
+# Begin MMCC Moodle Plugins
+## Managed by git (i.e. they are in their own git repo / git pull to upgrade )
 blocks/attendance
 blocks/moodleblock
 blocks/quickset
-blocks/sharing_cart
-filter/nanogong
+
 lib/editor/tinymce/plugins/hideabox
-local/loginas
+
+#Part of the Moodle git fork from CLAMP that we are using
+#local/lae
+
 mod/attendance
+
+theme/essential
+
+## NOT managed by git (i.e. download & replace to upgrade)
+blocks/sharing_cart
+
+filter/nanogong
+
+local/loginas
+
 mod/bigbluebuttonbn
 mod/hotpot
 mod/lightboxgallery
 mod/nanogong
 mod/oublog
+mod/quiz/report/cbmgrades
 mod/recordingsbn
-theme/essential
+# End MMCC Moodle Plugins
