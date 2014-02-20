@@ -719,11 +719,11 @@ function forum_cron() {
 
                 // OK so we need to send the email.
 
-                // Does the user want this post in a digest?  If so postpone it for now.
+                // Does the user want this post in a digest?  If so postpone it for now (unless it's a news forum and the poster has checked "Mail now").
                 $maildigest = forum_get_user_maildigest_bulk($digests, $userto, $forum->id);
 
-                if ($maildigest > 0) {
-                    // This user wants the mails to be in digest form.
+                if ($maildigest > 0 && !(1 == $post->mailnow && 'news' == $post->forumtype))  {
+                    // This user wants the mails to be in digest form
                     $queue = new stdClass();
                     $queue->userid       = $userto->id;
                     $queue->discussionid = $discussion->id;
@@ -2232,9 +2232,10 @@ function forum_get_unmailed_posts($starttime, $endtime, $now=null) {
         $timedsql = "";
     }
 
-    return $DB->get_records_sql("SELECT p.*, d.course, d.forum
+    return $DB->get_records_sql("SELECT f.type AS forumtype, p.*, d.course, d.forum
                                  FROM {forum_posts} p
                                  JOIN {forum_discussions} d ON d.id = p.discussion
+                                 JOIN {forum} f ON f.id = d.forum
                                  WHERE p.mailed = :mailed
                                  AND p.created >= :ptimestart
                                  AND (p.created < :ptimeend OR p.mailnow = :mailnow)
