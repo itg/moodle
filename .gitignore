@@ -33,6 +33,7 @@ composer.lock
 /behat.yml
 */yui/build/*/*-coverage.js
 /lib/yuilib/*/build/*/*-coverage.js
+mmcc/geolabs
 
 # Begin MMCC Moodle Plugins
 ## Managed by git (i.e. they are in their own git repo / git pull to upgrade )
