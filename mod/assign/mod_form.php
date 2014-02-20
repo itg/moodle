@@ -197,6 +197,10 @@ class mod_assign_mod_form extends moodleform_mod {
         $mform->addHelpButton('markingallocation', 'markingallocation', 'assign');
         $mform->disabledIf('markingallocation', 'markingworkflow', 'eq', 0);
 
+        $mform->setExpanded('submissionsettings');
+        $mform->setExpanded('notifications');
+        $mform->setExpanded('modstandardgrade');
+
         $this->standard_coursemodule_elements();
         $this->apply_admin_defaults();
 

@@ -29,6 +29,8 @@ class mod_data_mod_form extends moodleform_mod {
         // ----------------------------------------------------------------------
         $mform->addElement('header', 'entrieshdr', get_string('entries', 'data'));
 
+        $mform->setExpanded('entrieshdr');
+
         $mform->addElement('selectyesno', 'approval', get_string('requireapproval', 'data'));
         $mform->addHelpButton('approval', 'requireapproval', 'data');
 
@@ -48,6 +50,8 @@ class mod_data_mod_form extends moodleform_mod {
 
         // ----------------------------------------------------------------------
         $mform->addElement('header', 'availibilityhdr', get_string('availability'));
+
+        $mform->setExpanded('availibilityhdr');
 
         $mform->addElement('date_time_selector', 'timeavailablefrom', get_string('availablefromdate', 'data'),
                            array('optional' => true));

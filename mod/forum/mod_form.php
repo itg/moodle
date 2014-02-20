@@ -66,6 +66,8 @@ class mod_forum_mod_form extends moodleform_mod {
         // Attachments and word count.
         $mform->addElement('header', 'attachmentswordcounthdr', get_string('attachmentswordcount', 'forum'));
 
+        $mform->setExpanded('attachmentswordcounthdr');
+
         $choices = get_max_upload_sizes($CFG->maxbytes, $COURSE->maxbytes, 0, $CFG->forum_maxbytes);
         $choices[1] = get_string('uploadnotallowed');
         $mform->addElement('select', 'maxbytes', get_string('maxattachmentsize', 'forum'), $choices);
@@ -98,6 +100,8 @@ class mod_forum_mod_form extends moodleform_mod {
 
         // Subscription and tracking.
         $mform->addElement('header', 'subscriptionandtrackinghdr', get_string('subscriptionandtracking', 'forum'));
+
+        $mform->setExpanded('subscriptionandtrackinghdr');
 
         $options = array();
         $options[FORUM_CHOOSESUBSCRIBE] = get_string('subscriptionoptional', 'forum');

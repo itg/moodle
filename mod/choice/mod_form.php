@@ -71,6 +71,9 @@ class mod_choice_mod_form extends moodleform_mod {
 
 //-------------------------------------------------------------------------------
         $mform->addElement('header', 'timerestricthdr', get_string('availability'));
+
+        $mform->setExpanded('timerestricthdr');
+
         $mform->addElement('checkbox', 'timerestrict', get_string('timerestrict', 'choice'));
 
         $mform->addElement('date_time_selector', 'timeopen', get_string("choiceopen", "choice"));
@@ -81,6 +84,8 @@ class mod_choice_mod_form extends moodleform_mod {
 
 //-------------------------------------------------------------------------------
         $mform->addElement('header', 'resultshdr', get_string('results', 'choice'));
+
+        $mform->setExpanded('resultshdr');
 
         $mform->addElement('select', 'showresults', get_string("publish", "choice"), $CHOICE_SHOWRESULTS);
 

@@ -116,6 +116,8 @@ class mod_workshop_mod_form extends moodleform_mod {
         // Submission settings --------------------------------------------------------
         $mform->addElement('header', 'submissionsettings', get_string('submissionsettings', 'workshop'));
 
+        $mform->setExpanded('submissionsettings');
+
         $label = get_string('instructauthors', 'workshop');
         $mform->addElement('editor', 'instructauthorseditor', $label, null,
                             workshop::instruction_editors_options($this->context));
@@ -140,6 +142,8 @@ class mod_workshop_mod_form extends moodleform_mod {
         // Assessment settings --------------------------------------------------------
         $mform->addElement('header', 'assessmentsettings', get_string('assessmentsettings', 'workshop'));
 
+        $mform->setExpanded('assessmentsettings');
+
         $label = get_string('instructreviewers', 'workshop');
         $mform->addElement('editor', 'instructreviewerseditor', $label, null,
                             workshop::instruction_editors_options($this->context));
@@ -151,6 +155,8 @@ class mod_workshop_mod_form extends moodleform_mod {
 
         // Feedback -------------------------------------------------------------------
         $mform->addElement('header', 'feedbacksettings', get_string('feedbacksettings', 'workshop'));
+
+        $mform->setExpanded('feedbacksettings');
 
         $mform->addElement('select', 'overallfeedbackmode', get_string('overallfeedbackmode', 'mod_workshop'), array(
             0 => get_string('overallfeedbackmode_0', 'mod_workshop'),
@@ -194,6 +200,8 @@ class mod_workshop_mod_form extends moodleform_mod {
 
         // Availability ---------------------------------------------------------------
         $mform->addElement('header', 'accesscontrol', get_string('availability', 'core'));
+
+        $mform->setExpanded('accesscontrol');
 
         $label = get_string('submissionstart', 'workshop');
         $mform->addElement('date_time_selector', 'submissionstart', $label, array('optional' => true));

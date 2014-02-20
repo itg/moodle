@@ -95,6 +95,8 @@ class mod_lesson_mod_form extends moodleform_mod {
         // Appearance.
         $mform->addElement('header', 'appearancehdr', get_string('appearance'));
 
+        $mform->setExpanded('appearancehdr');
+
         $filemanageroptions = array();
         $filemanageroptions['filetypes'] = '*';
         $filemanageroptions['maxbytes'] = $this->course->maxbytes;
@@ -165,6 +167,8 @@ class mod_lesson_mod_form extends moodleform_mod {
         // Availability.
         $mform->addElement('header', 'availabilityhdr', get_string('availability'));
 
+        $mform->setExpanded('availabilityhdr');
+
         $mform->addElement('date_time_selector', 'available', get_string('available', 'lesson'), array('optional'=>true));
         $mform->setDefault('available', 0);
 
@@ -231,6 +235,8 @@ class mod_lesson_mod_form extends moodleform_mod {
         // Flow control.
         $mform->addElement('header', 'flowcontrol', get_string('flowcontrol', 'lesson'));
 
+        $mform->setExpanded('flowcontrol');
+
         $mform->addElement('selectyesno', 'modattempts', get_string('modattempts', 'lesson'));
         $mform->addHelpButton('modattempts', 'modattempts', 'lesson');
         $mform->setDefault('modattempts', 0);
@@ -265,6 +271,8 @@ class mod_lesson_mod_form extends moodleform_mod {
 
         // Grade.
         $this->standard_grading_coursemodule_elements();
+
+        $mform->setExpanded('modstandardgrade');
 
         // No header here, so that the following settings are displayed in the grade section.
 

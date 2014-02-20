@@ -45,6 +45,8 @@ class mod_chat_mod_form extends moodleform_mod {
 
         // Chat sessions.
         $mform->addElement('header', 'sessionshdr', get_string('sessions', 'chat'));
+	
+        $mform->setExpanded('sessionshdr');
 
         $mform->addElement('date_time_selector', 'chattime', get_string('chattime', 'chat'));
 

@@ -43,6 +43,8 @@ class mod_glossary_mod_form extends moodleform_mod {
         // ----------------------------------------------------------------------
         $mform->addElement('header', 'entrieshdr', get_string('entries', 'glossary'));
 
+        $mform->setExpanded('entrieshdr');
+
         $mform->addElement('selectyesno', 'defaultapproval', get_string('defaultapproval', 'glossary'));
         $mform->setDefault('defaultapproval', $CFG->glossary_defaultapproval);
         $mform->addHelpButton('defaultapproval', 'defaultapproval', 'glossary');
@@ -65,6 +67,8 @@ class mod_glossary_mod_form extends moodleform_mod {
 
         // ----------------------------------------------------------------------
         $mform->addElement('header', 'appearancehdr', get_string('appearance'));
+
+        $mform->setExpanded('appearancehdr');
 
         // Get and update available formats.
         $recformats = glossary_get_available_formats();

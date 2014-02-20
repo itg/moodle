@@ -51,6 +51,8 @@ class mod_feedback_mod_form extends moodleform_mod {
         //-------------------------------------------------------------------------------
         $mform->addElement('header', 'timinghdr', get_string('availability'));
 
+        $mform->setExpanded('timinghdr');
+
         $mform->addElement('date_time_selector', 'timeopen', get_string('feedbackopen', 'feedback'),
             array('optional' => true));
 
@@ -59,6 +61,8 @@ class mod_feedback_mod_form extends moodleform_mod {
 
         //-------------------------------------------------------------------------------
         $mform->addElement('header', 'feedbackhdr', get_string('questionandsubmission', 'feedback'));
+
+        $mform->setExpanded('feedbackhdr');
 
         $options=array();
         $options[1]  = get_string('anonymous', 'feedback');
@@ -107,6 +111,8 @@ class mod_feedback_mod_form extends moodleform_mod {
 
         //-------------------------------------------------------------------------------
         $mform->addElement('header', 'aftersubmithdr', get_string('after_submit', 'feedback'));
+
+        $mform->setExpanded('aftersubmithdr');
 
         $mform->addElement('selectyesno', 'publish_stats', get_string('show_analysepage_after_submit', 'feedback'));
 

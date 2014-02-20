@@ -101,6 +101,8 @@ class mod_scorm_mod_form extends moodleform_mod {
         // Display Settings.
         $mform->addElement('header', 'displaysettings', get_string('appearance'));
 
+        $mform->setExpanded('displaysettings');
+
         // Framed / Popup Window.
         $mform->addElement('select', 'popup', get_string('display', 'scorm'), scorm_get_popup_display_array());
         $mform->setDefault('popup', $cfgscorm->popup);
@@ -200,11 +202,15 @@ class mod_scorm_mod_form extends moodleform_mod {
         // Availability.
         $mform->addElement('header', 'availability', get_string('availability'));
 
+        $mform->setExpanded('availability');
+
         $mform->addElement('date_time_selector', 'timeopen', get_string("scormopen", "scorm"), array('optional' => true));
         $mform->addElement('date_time_selector', 'timeclose', get_string("scormclose", "scorm"), array('optional' => true));
 
         // Grade Settings.
         $mform->addElement('header', 'gradesettings', get_string('grade'));
+
+        $mform->setExpanded('gradesettings');
 
         // Grade Method.
         $mform->addElement('select', 'grademethod', get_string('grademethod', 'scorm'), scorm_get_grade_method_array());
@@ -221,6 +227,8 @@ class mod_scorm_mod_form extends moodleform_mod {
 
         // Attempts management.
         $mform->addElement('header', 'attemptsmanagementhdr', get_string('attemptsmanagement', 'scorm'));
+
+        $mform->setExpanded('attemptsmanagementhdr');
 
         // Max Attempts.
         $mform->addElement('select', 'maxattempt', get_string('maximumattempts', 'scorm'), scorm_get_attempts_array());
