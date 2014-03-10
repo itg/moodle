@@ -25,3 +25,4 @@
 $string['pluginname'] = 'User report';
 $string['user:view'] = 'View your own grade report';
 $string['tablesummary'] = 'The table is arranged as a list of graded items including categories of graded items. When items are in a category they will be indicated as such.';
+$string['grade_disclaimer'] = 'The Moodle gradebook records your score on individual course activities. For an understanding of how your overall grade in this course will be calculated, please refer back to your syllabus or contact your instructor for more information.';
