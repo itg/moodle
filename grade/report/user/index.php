@@ -164,4 +164,6 @@ if (has_capability('moodle/grade:viewall', $context)) { //Teachers will see all 
     }
 }
 
+echo html_writer::tag('p', get_string('grade_disclaimer', 'gradereport_user'), array('style' => 'margin:auto 0.5em;font-style:italic;text-align:center;'));
+
 echo $OUTPUT->footer();
