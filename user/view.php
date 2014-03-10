@@ -369,7 +369,7 @@ if ($currentuser || has_capability('moodle/user:viewdetails', $usercontext) || h
 
 if ($currentuser || has_capability('moodle/user:viewuseractivitiesreport', $usercontext)) {
     echo '<div class="grades_link_course">';
-    echo html_writer::link($CFG->wwwroot . '/course/user.php?mode=grade&id=' . $courseid . '&user=' . $user->id, 'Course Grades');
+    echo html_writer::link($CFG->wwwroot . '/grade/report/user/index.php?&id=' . $courseid . '&userid=' . $user->id, 'Course Grades');
     echo '</div>';
 
     echo '<div class="grades_link_overview">';
