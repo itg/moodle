@@ -40,6 +40,7 @@ mmcc/geolabs
 blocks/attendance
 blocks/moodleblock
 blocks/quickset
+blocks/quickfindlist
 
 lib/editor/tinymce/plugins/hideabox
 
