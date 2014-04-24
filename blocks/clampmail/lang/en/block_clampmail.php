@@ -42,9 +42,9 @@ $string['remove_all'] = 'Remove All';
 $string['role_filter'] = 'Role Filter';
 $string['no_filter'] = 'No filter';
 $string['potential_users'] = 'Potential Recipents';
-$string['potential_sections'] = 'Potential Sections';
-$string['no_section'] = 'Not in a section';
-$string['all_sections'] = 'All Sections';
+$string['potential_sections'] = 'Potential Groups';
+$string['no_section'] = 'Not in a group';
+$string['all_sections'] = 'All Groups';
 $string['attachment'] = 'Attachment(s)';
 $string['subject'] = 'Subject';
 $string['message'] = 'Message';
@@ -63,7 +63,7 @@ $string['receipt_help'] = 'Receive a copy of the email being sent';
 $string['no_alternates'] = 'No alternate emails found for {$a->fullname}. Continue to make one.';
 
 $string['select_users'] = 'Select Users ...';
-$string['select_groups'] = 'Select Sections ...';
+$string['select_groups'] = 'Select Groups ...';
 
 // Config form strings.
 $string['allowstudents'] = 'Allow students to use Quickmail';
