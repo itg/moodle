@@ -89,6 +89,10 @@ if (!empty($SESSION->has_timed_out)) {
 $frm  = false;
 $user = false;
 
+if (isloggedin()) {
+    redirect($CFG->wwwroot.'/index.php');
+}
+
 $authsequence = get_enabled_auth_plugins(true); // auths, in sequence
 foreach($authsequence as $authname) {
     $authplugin = get_auth_plugin($authname);
