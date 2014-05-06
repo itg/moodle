@@ -63,8 +63,8 @@ if (!array_key_exists($last, $reports)) {
 }
 
 if (empty($last)) {
-    if (array_key_exists('grader', $reports)) {
-        $last = 'grader';
+    if (array_key_exists('laegrader', $reports)) {
+        $last = 'laegrader';
 
     } else if (array_key_exists($CFG->grade_profilereport, $reports)) {
         $last = $CFG->grade_profilereport;
