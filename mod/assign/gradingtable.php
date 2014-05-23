@@ -386,6 +386,7 @@ class assign_grading_table extends table_sql implements renderable {
         }
         // We require at least one unique column for the sort.
         $this->sortable(true, 'userid');
+        $this->sort_default_column = 'lastname';
         $this->no_sorting('recordid');
         $this->no_sorting('finalgrade');
         $this->no_sorting('userid');
