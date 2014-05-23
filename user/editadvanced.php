@@ -70,6 +70,8 @@ if ($id == -1) {
     $user->auth = 'manual';
     $user->confirmed = 1;
     $user->deleted = 0;
+    $user->trackforums = 1;
+    $user->maildigest = 1;
     require_capability('moodle/user:create', $systemcontext);
     admin_externalpage_setup('addnewuser', '', array('id' => -1));
 } else {
