@@ -1333,8 +1333,6 @@ class assign {
         }
         return $this->participants[$key];
     }
-     
-    }
 
     /**
      * Load a count of valid teams for this assignment.
