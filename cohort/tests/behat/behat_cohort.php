@@ -17,7 +17,7 @@
 /**
  * Cohorts steps definitions.
  *
- * @package    core
+ * @package    core_cohort
  * @category   test
  * @copyright  2013 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -32,7 +32,7 @@ use Behat\Behat\Context\Step\Given as Given;
 /**
  * Steps definitions for cohort actions.
  *
- * @package    core
+ * @package    core_cohort
  * @category   test
  * @copyright  2013 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -62,14 +62,15 @@ class behat_cohort extends behat_base {
 
         // If we are not in the cohorts management we should move there before anything else.
         if (!$this->getSession()->getPage()->find('css', 'input#cohort_search_q')) {
+
+            $parentnodes = get_string('administrationsite') .
+                ' > ' . get_string('users', 'admin') .
+                ' > ' . get_string('accounts', 'admin');
+
             $steps = array_merge(
                 array(
                     new Given('I am on homepage'),
-                    new Given('I collapse "' . get_string('frontpagesettings', 'admin') . '" node'),
-                    new Given('I expand "' . get_string('administrationsite') . '" node'),
-                    new Given('I expand "' . get_string('users', 'admin') . '" node'),
-                    new Given('I expand "' . get_string('accounts', 'admin') . '" node'),
-                    new Given('I follow "' . get_string('cohorts', 'cohort') . '"')
+                    new Given('I navigate to "' . get_string('cohorts', 'cohort') . '" node in "' . $parentnodes . '"')
                 ),
                 $steps
             );

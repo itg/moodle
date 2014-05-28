@@ -1,4 +1,4 @@
-@tool @tool_uploadcourse @_only_local
+@tool @tool_uploadcourse @_only_local @_file_upload
 Feature: An admin can update courses using a CSV file
   In order to update courses using a CSV file
   As an admin
@@ -9,9 +9,7 @@ Feature: An admin can update courses using a CSV file
       | fullname | shortname | category |
       | Some random name | C1 | 0 |
     And I log in as "admin"
-    And I expand "Site administration" node
-    And I expand "Courses" node
-    And I follow "Upload courses"
+    And I navigate to "Upload courses" node in "Site administration > Courses"
 
   @javascript
   Scenario: Updating a course fullname

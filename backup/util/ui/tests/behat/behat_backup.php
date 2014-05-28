@@ -17,7 +17,7 @@
 /**
  * Backup and restore actions to help behat feature files writting.
  *
- * @package    core
+ * @package    core_backup
  * @category   test
  * @copyright  2013 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -35,7 +35,7 @@ use Behat\Gherkin\Node\TableNode as TableNode,
 /**
  * Backup-related steps definitions.
  *
- * @package    core
+ * @package    core_backup
  * @category   test
  * @copyright  2013 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -349,9 +349,7 @@ class behat_backup extends behat_base {
         foreach ($datahash as $locator => $value) {
 
             try {
-                // Using $this->find* to enforce stability over speed.
-                $fieldnode = $this->find_field($locator);
-                $field = behat_field_manager::get_form_field($fieldnode, $this->getSession());
+                $field = behat_field_manager::get_form_field_from_label($locator, $this);
                 $field->set_value($value);
 
             } catch (ElementNotFoundException $e) {

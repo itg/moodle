@@ -771,6 +771,12 @@ abstract class lesson_add_page_form_base extends moodleform {
         if ($value !== null) {
             $this->_form->setDefault($name, $value);
         }
+        $this->_form->addHelpButton($name, 'score', 'lesson');
+
+        // Score is only used for custom scoring. Disable the element when not in use to stop some confusion.
+        if (!$this->_customdata['lesson']->custom) {
+            $this->_form->freeze($name);
+        }
     }
 
     /**
@@ -951,6 +957,9 @@ class lesson extends lesson_base {
         require_once($CFG->libdir.'/gradelib.php');
         require_once($CFG->dirroot.'/calendar/lib.php');
 
+        $cm = get_coursemodule_from_instance('lesson', $this->properties->id, $this->properties->course);
+        $context = context_module::instance($cm->id);
+
         $DB->delete_records("lesson", array("id"=>$this->properties->id));
         $DB->delete_records("lesson_pages", array("lessonid"=>$this->properties->id));
         $DB->delete_records("lesson_answers", array("lessonid"=>$this->properties->id));
@@ -965,6 +974,10 @@ class lesson extends lesson_base {
                 $event->delete();
             }
         }
+
+        // Delete files associated with this module.
+        $fs = get_file_storage();
+        $fs->delete_area_files($context->id);
 
         grade_update('mod/lesson', $this->properties->course, 'mod', 'lesson', $this->properties->id, 0, null, array('deleted'=>1));
         return true;
@@ -1820,6 +1833,12 @@ abstract class lesson_page extends lesson_base {
         // ..and the page itself
         $DB->delete_records("lesson_pages", array("id" => $this->properties->id));
 
+        // Delete files associated with this page.
+        $cm = get_coursemodule_from_instance('lesson', $this->lesson->id, $this->lesson->course);
+        $context = context_module::instance($cm->id);
+        $fs = get_file_storage();
+        $fs->delete_area_files($context->id, 'mod_lesson', 'page_contents', $this->properties->id);
+
         // repair the hole in the linkage
         if (!$this->properties->prevpageid && !$this->properties->nextpageid) {
             //This is the only page, no repair needed
@@ -1947,12 +1966,17 @@ abstract class lesson_page extends lesson_base {
 
                 $attempt->timeseen = time();
                 // if allow modattempts, then update the old attempt record, otherwise, insert new answer record
+                $userisreviewing = false;
                 if (isset($USER->modattempts[$this->lesson->id])) {
                     $attempt->retry = $nretakes - 1; // they are going through on review, $nretakes will be too high
+                    $userisreviewing = true;
                 }
 
-                if ($this->lesson->retake || (!$this->lesson->retake && $nretakes == 0)) {
-                    $DB->insert_record("lesson_attempts", $attempt);
+                // Only insert a record if we are not reviewing the lesson.
+                if (!$userisreviewing) {
+                    if ($this->lesson->retake || (!$this->lesson->retake && $nretakes == 0)) {
+                        $DB->insert_record("lesson_attempts", $attempt);
+                    }
                 }
                 // "number of attempts remaining" message if $this->lesson->maxattempts > 1
                 // displaying of message(s) is at the end of page for more ergonomic display
@@ -2729,7 +2753,7 @@ class lesson_page_type_manager {
     public function load_all_pages(lesson $lesson) {
         global $DB;
         if (!($pages =$DB->get_records('lesson_pages', array('lessonid'=>$lesson->id)))) {
-            print_error('cannotfindpages', 'lesson');
+            return array(); // Records returned empty.
         }
         foreach ($pages as $key=>$page) {
             $pagetype = get_class($this->types[$page->qtype]);

@@ -1,4 +1,4 @@
-@core @core_cohort @_only_local
+@core @core_cohort @_only_local @_file_upload
 Feature: Upload users to a cohort
   In order to quickly fill site-wide groups with users
   As an admin
@@ -22,11 +22,7 @@ Feature: Upload users to a cohort
     And I follow "Course 2"
     And I add "Cohort sync" enrolment method with:
       | Cohort | Cohort 2 |
-    And I collapse "Course administration" node
-    And I expand "Site administration" node
-    And I expand "Users" node
-    And I expand "Accounts" node
-    When I follow "Upload users"
+    When I navigate to "Upload users" node in "Site administration > Users > Accounts"
     And I upload "lib/tests/fixtures/upload_users_cohorts.csv" file to "File" filemanager
     And I press "Upload users"
     And I press "Upload users"

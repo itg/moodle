@@ -1113,12 +1113,12 @@ function get_empty_accessdata() {
 function get_user_accessdata($userid, $preloadonly=false) {
     global $CFG, $ACCESSLIB_PRIVATE, $USER;
 
-    if (!empty($USER->acces['rdef']) and empty($ACCESSLIB_PRIVATE->rolepermissions)) {
+    if (!empty($USER->access['rdef']) and empty($ACCESSLIB_PRIVATE->rolepermissions)) {
         // share rdef from USER session with rolepermissions cache in order to conserve memory
-        foreach($USER->acces['rdef'] as $k=>$v) {
-            $ACCESSLIB_PRIVATE->rolepermissions[$k] =& $USER->acces['rdef'][$k];
+        foreach ($USER->access['rdef'] as $k=>$v) {
+            $ACCESSLIB_PRIVATE->rolepermissions[$k] =& $USER->access['rdef'][$k];
         }
-        $ACCESSLIB_PRIVATE->accessdatabyuser[$USER->id] = $USER->acces;
+        $ACCESSLIB_PRIVATE->accessdatabyuser[$USER->id] = $USER->access;
     }
 
     if (!isset($ACCESSLIB_PRIVATE->accessdatabyuser[$userid])) {
@@ -2615,8 +2615,11 @@ function get_default_role_archetype_allows($type, $archetype) {
  * Reset role capabilities to default according to selected role archetype.
  * If no archetype selected, removes all capabilities.
  *
- * @param int $roleid
- * @return void
+ * This applies to capabilities that are assigned to the role (that you could
+ * edit in the 'define roles' interface), and not to any capability overrides
+ * in different locations.
+ *
+ * @param int $roleid ID of role to reset capabilities for
  */
 function reset_role_capabilities($roleid) {
     global $DB;
@@ -2626,11 +2629,15 @@ function reset_role_capabilities($roleid) {
 
     $systemcontext = context_system::instance();
 
-    $DB->delete_records('role_capabilities', array('roleid'=>$roleid));
+    $DB->delete_records('role_capabilities',
+            array('roleid' => $roleid, 'contextid' => $systemcontext->id));
 
     foreach($defaultcaps as $cap=>$permission) {
         assign_capability($cap, $permission, $roleid, $systemcontext->id);
     }
+
+    // Mark the system context dirty.
+    context_system::instance()->mark_dirty();
 }
 
 /**
@@ -5235,7 +5242,7 @@ abstract class context extends stdClass implements IteratorAggregate {
      * @param stdClass $record
      */
     protected function __construct(stdClass $record) {
-        $this->_id           = $record->id;
+        $this->_id           = (int)$record->id;
         $this->_contextlevel = (int)$record->contextlevel;
         $this->_instanceid   = $record->instanceid;
         $this->_path         = $record->path;
@@ -5644,7 +5651,7 @@ abstract class context extends stdClass implements IteratorAggregate {
      * Is this context part of any course? If yes return course context.
      *
      * @param bool $strict true means throw exception if not found, false means return false if not found
-     * @return course_context context of the enclosing course, null if not found or exception
+     * @return context_course context of the enclosing course, null if not found or exception
      */
     public function get_course_context($strict = true) {
         if ($strict) {
@@ -5780,6 +5787,13 @@ class context_helper extends context {
     }
 
     /**
+     * Reset internal context levels array.
+     */
+    public static function reset_levels() {
+        self::$alllevels = null;
+    }
+
+    /**
      * Initialise context levels, call before using self::$alllevels.
      */
     private static function init_levels() {
@@ -5801,8 +5815,17 @@ class context_helper extends context {
             return;
         }
 
+        $levels = $CFG->custom_context_classes;
+        if (!is_array($levels)) {
+            $levels = @unserialize($levels);
+        }
+        if (!is_array($levels)) {
+            debugging('Invalid $CFG->custom_context_classes detected, value ignored.', DEBUG_DEVELOPER);
+            return;
+        }
+
         // Unsupported custom levels, use with care!!!
-        foreach ($CFG->custom_context_classes as $level => $classname) {
+        foreach ($levels as $level => $classname) {
             self::$alllevels[$level] = $classname;
         }
         ksort(self::$alllevels);
@@ -6767,7 +6790,7 @@ class context_course extends context {
      * Is this context part of any course? If yes return course context.
      *
      * @param bool $strict true means throw exception if not found, false means return false if not found
-     * @return course_context context of the enclosing course, null if not found or exception
+     * @return context_course context of the enclosing course, null if not found or exception
      */
     public function get_course_context($strict = true) {
         return $this;
@@ -7233,7 +7256,7 @@ class context_block extends context {
      * Is this context part of any course? If yes return course context.
      *
      * @param bool $strict true means throw exception if not found, false means return false if not found
-     * @return course_context context of the enclosing course, null if not found or exception
+     * @return context_course context of the enclosing course, null if not found or exception
      */
     public function get_course_context($strict = true) {
         $parentcontext = $this->get_parent_context();

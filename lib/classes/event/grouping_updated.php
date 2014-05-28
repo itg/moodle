@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * core_group grouping updated event.
+ * Grouping updated event.
  *
- * @package    core_group
+ * @package    core
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,20 +26,14 @@ namespace core\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * core_group grouping updated event class.
+ * Grouping updated event class.
  *
- * @package    core_group
+ * @package    core
+ * @since      Moodle 2.6
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class grouping_updated extends \core\event\base {
-
-    /**
-     * Legacy data.
-     *
-     * @var mixed
-     */
-    protected $legacydata;
 
     /**
      * Returns description of what happened.
@@ -56,7 +50,7 @@ class grouping_updated extends \core\event\base {
      * @return stdClass
      */
     protected function get_legacy_eventdata() {
-        return $this->legacydata;
+        return $this->get_record_snapshot('groupings', $this->objectid);
     }
 
     /**
@@ -104,7 +98,7 @@ class grouping_updated extends \core\event\base {
      * @return void
      */
     public function set_legacy_eventdata($legacydata) {
-        $this->legacydata = $legacydata;
+        // This function is not used and will be removed in 2.7.
     }
 
 }

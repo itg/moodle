@@ -1168,8 +1168,21 @@ function quiz_get_overdue_handling_options() {
 }
 
 /**
- * @param string $state one of the state constants like IN_PROGRESS.
- * @return string the human-readable state name.
+ * Get the choices for what size user picture to show.
+ * @return array string => lang string the options for whether to display the user's picture.
+ */
+function quiz_get_user_image_options() {
+    return array(
+        QUIZ_SHOWIMAGE_NONE  => get_string('shownoimage', 'quiz'),
+        QUIZ_SHOWIMAGE_SMALL => get_string('showsmallimage', 'quiz'),
+        QUIZ_SHOWIMAGE_LARGE => get_string('showlargeimage', 'quiz'),
+    );
+}
+
+/**
+ * Get the human-readable name for a quiz attempt state.
+ * @param string $state one of the state constants like {@link quiz_attempt::IN_PROGRESS}.
+ * @return string The lang string to describe that state.
  */
 function quiz_attempt_state_name($state) {
     switch ($state) {
@@ -1375,6 +1388,7 @@ function quiz_get_review_options($quiz, $attempt, $context) {
         $options->marks = question_display_options::MARK_AND_MAX;
         $options->feedback = question_display_options::VISIBLE;
         $options->numpartscorrect = question_display_options::VISIBLE;
+        $options->manualcomment = question_display_options::VISIBLE;
         $options->generalfeedback = question_display_options::VISIBLE;
         $options->rightanswer = question_display_options::VISIBLE;
         $options->overallfeedback = question_display_options::VISIBLE;
@@ -1836,7 +1850,9 @@ function quiz_process_group_deleted_in_course($courseid) {
               FROM {quiz_overrides} o
               JOIN {quiz} quiz ON quiz.id = o.quiz
          LEFT JOIN {groups} grp ON grp.id = o.groupid
-             WHERE quiz.course = :courseid AND grp.id IS NULL";
+             WHERE quiz.course = :courseid
+               AND o.groupid IS NOT NULL
+               AND grp.id IS NULL";
     $params = array('courseid' => $courseid);
     $records = $DB->get_records_sql_menu($sql, $params);
     if (!$records) {
@@ -1936,6 +1952,7 @@ class mod_quiz_display_options extends question_display_options {
         $options->overallfeedback = self::extract($quiz->reviewoverallfeedback, $when);
 
         $options->numpartscorrect = $options->feedback;
+        $options->manualcomment = $options->feedback;
 
         if ($quiz->questiondecimalpoints != -1) {
             $options->markdp = $quiz->questiondecimalpoints;

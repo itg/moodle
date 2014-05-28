@@ -528,9 +528,6 @@ class core_renderer extends renderer_base {
               <li><a href="http://www.contentquality.com/mynewtester/cynthia.exe?rptmode=0&amp;warnp2n3e=1&amp;url1=' . urlencode(qualified_me()) . '">WCAG 1 (2,3) Check</a></li>
             </ul></div>';
         }
-        if (!empty($CFG->additionalhtmlfooter)) {
-            $output .= "\n".$CFG->additionalhtmlfooter;
-        }
         return $output;
     }
 
@@ -552,15 +549,22 @@ class core_renderer extends renderer_base {
 
     /**
      * The standard tags (typically script tags that are not needed earlier) that
-     * should be output after everything else, . Designed to be called in theme layout.php files.
+     * should be output after everything else. Designed to be called in theme layout.php files.
      *
      * @return string HTML fragment.
      */
     public function standard_end_of_body_html() {
+        global $CFG;
+
         // This function is normally called from a layout.php file in {@link core_renderer::header()}
         // but some of the content won't be known until later, so we return a placeholder
         // for now. This will be replaced with the real content in {@link core_renderer::footer()}.
-        return $this->unique_end_html_token;
+        $output = '';
+        if (!empty($CFG->additionalhtmlfooter)) {
+            $output .= "\n".$CFG->additionalhtmlfooter;
+        }
+        $output .= $this->unique_end_html_token;
+        return $output;
     }
 
     /**
@@ -1420,7 +1424,12 @@ class core_renderer extends renderer_base {
      */
     public function block_move_target($target, $zones, $previous) {
         if ($previous == null) {
-            $position = get_string('moveblockbefore', 'block', $zones[0]);
+            if (empty($zones)) {
+                // There are no zones, probably because there are no blocks.
+                $position = get_string('moveblockhere', 'block');
+            } else {
+                $position = get_string('moveblockbefore', 'block', $zones[0]);
+            }
         } else {
             $position = get_string('moveblockafter', 'block', $previous);
         }
@@ -3229,6 +3238,28 @@ EOD;
     }
 
     /**
+     * Renders a custom block region.
+     *
+     * Use this method if you want to add an additional block region to the content of the page.
+     * Please note this should only be used in special situations.
+     * We want to leave the theme is control where ever possible!
+     *
+     * This method must use the same method that the theme uses within its layout file.
+     * As such it asks the theme what method it is using.
+     * It can be one of two values, blocks or blocks_for_region (deprecated).
+     *
+     * @param string $regionname The name of the custom region to add.
+     * @return string HTML for the block region.
+     */
+    public function custom_block_region($regionname) {
+        if ($this->page->theme->get_block_render_method() === 'blocks') {
+            return $this->blocks($regionname);
+        } else {
+            return $this->blocks_for_region($regionname);
+        }
+    }
+
+    /**
      * Returns the CSS classes to apply to the body tag.
      *
      * @since 2.5.1 2.6
@@ -3471,7 +3502,10 @@ class core_renderer_ajax extends core_renderer {
         $e->debuginfo  = NULL;
         $e->reproductionlink = NULL;
         if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
-            $e->reproductionlink = $link;
+            $link = (string) $link;
+            if ($link) {
+                $e->reproductionlink = $link;
+            }
             if (!empty($debuginfo)) {
                 $e->debuginfo = $debuginfo;
             }

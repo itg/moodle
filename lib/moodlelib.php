@@ -3210,8 +3210,8 @@ function require_logout() {
  */
 function require_course_login($courseorid, $autologinguest = true, $cm = null, $setwantsurltome = true, $preventredirect = false) {
     global $CFG, $PAGE, $SITE;
-    $issite = (is_object($courseorid) and $courseorid->id == SITEID)
-          or (!is_object($courseorid) and $courseorid == SITEID);
+    $issite = ((is_object($courseorid) and $courseorid->id == SITEID)
+          or (!is_object($courseorid) and $courseorid == SITEID));
     if ($issite && !empty($cm) && !($cm instanceof cm_info)) {
         // Note: nearly all pages call get_fast_modinfo anyway and it does not make any
         // db queries so this is not really a performance concern, however it is obviously
@@ -3397,9 +3397,7 @@ function get_user_key($script, $userid, $instance=null, $iprestriction=null, $va
  * @return bool Always returns true
  */
 function update_user_login_times() {
-    global $USER, $DB, $CFG;
-
-    require_once($CFG->dirroot.'/user/lib.php');
+    global $USER, $DB;
 
     if (isguestuser()) {
         // Do not update guest access times/ips for performance.
@@ -3425,7 +3423,9 @@ function update_user_login_times() {
     $USER->lastaccess = $user->lastaccess = $now;
     $USER->lastip = $user->lastip = getremoteaddr();
 
-    user_update_user($user, false);
+    // Note: do not call user_update_user() here because this is part of the login process,
+    //       the login event means that these fields were updated.
+    $DB->update_record('user', $user);
     return true;
 }
 
@@ -3628,7 +3628,7 @@ function fullname($user, $override=false) {
     // The special characters are Japanese brackets that are common enough to make allowances for them (not covered by :punct:).
     $patterns[] = '/[[:punct:]「」]*EMPTY[[:punct:]「」]*/u';
     // This regular expression is to remove any double spaces in the display name.
-    $patterns[] = '/\s{2,}/';
+    $patterns[] = '/\s{2,}/u';
     foreach ($patterns as $pattern) {
         $displayname = preg_replace($pattern, ' ', $displayname);
     }
@@ -4120,9 +4120,9 @@ function truncate_userinfo(array $info) {
         'icq'         =>  15,
         'phone1'      =>  20,
         'phone2'      =>  20,
-        'institution' =>  40,
-        'department'  =>  30,
-        'address'     =>  70,
+        'institution' => 255,
+        'department'  => 255,
+        'address'     => 255,
         'city'        => 120,
         'country'     =>   2,
         'url'         => 255,
@@ -4232,6 +4232,9 @@ function delete_user(stdClass $user) {
 
     // Remove users private keys.
     $DB->delete_records('user_private_key', array('userid' => $user->id));
+
+    // Remove users customised pages.
+    $DB->delete_records('my_pages', array('userid' => $user->id, 'private' => 1));
 
     // Force logout - may fail if file based sessions used, sorry.
     \core\session\manager::kill_user_sessions($user->id);
@@ -7596,7 +7599,18 @@ function moodle_setlocale($locale='') {
         $messages= setlocale (LC_MESSAGES, 0);
     }
     // Set locale to all.
-    setlocale (LC_ALL, $currentlocale);
+    $result = setlocale (LC_ALL, $currentlocale);
+    // If setting of locale fails try the other utf8 or utf-8 variant,
+    // some operating systems support both (Debian), others just one (OSX).
+    if ($result === false) {
+        if (stripos($currentlocale, '.UTF-8') !== false) {
+            $newlocale = str_ireplace('.UTF-8', '.UTF8', $currentlocale);
+            setlocale (LC_ALL, $newlocale);
+        } else if (stripos($currentlocale, '.UTF8') !== false) {
+            $newlocale = str_ireplace('.UTF8', '.UTF-8', $currentlocale);
+            setlocale (LC_ALL, $newlocale);
+        }
+    }
     // Set old values.
     setlocale (LC_MONETARY, $monetary);
     setlocale (LC_NUMERIC, $numeric);
@@ -8889,6 +8903,10 @@ function get_performance_info() {
     $info['dbqueries'] = $DB->perf_get_reads().'/'.($DB->perf_get_writes() - $PERF->logwrites);
     $info['html'] .= '<span class="dbqueries">DB reads/writes: '.$info['dbqueries'].'</span> ';
     $info['txt'] .= 'db reads/writes: '.$info['dbqueries'].' ';
+
+    $info['dbtime'] = round($DB->perf_get_queries_time(), 5);
+    $info['html'] .= '<span class="dbtime">DB queries time: '.$info['dbtime'].' secs</span> ';
+    $info['txt'] .= 'db queries time: ' . $info['dbtime'] . 's ';
 
     if (function_exists('posix_times')) {
         $ptimes = posix_times();

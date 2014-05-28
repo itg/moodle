@@ -11,6 +11,13 @@ select {
 
 // Forum
 
+.path-mod-forum .forumsearch {
+    input,
+    .helptooltip {
+        margin: 0 3px;
+    }
+}
+
 .path-mod-forum .forumheaderlist,
 .path-mod-forum .forumheaderlist td {
     border: none;
@@ -47,15 +54,49 @@ select {
     .header {
         margin-bottom: 3px;
     }
-    .maincontent {
-        .left {
-            padding: 0 10px 0 10px;
+    .picture img {
+        margin: 3px;
+        &.userpicture {
+            margin-left: 3px;
+            margin-right: 10px;
+        }
+    }
+    .content {
+        .posting.fullpost {
+            margin-top: 8px;
+        }
+    }
+    .row {
+        .topic,
+        .content-mask,
+        .options {
+            margin-left: 48px;
+        }
+        &.side {
+            clear: both;
+        }
+    }
+}
+
+.dir-rtl .forumpost {
+    .picture img {
+        &.userpicture {
+            margin-left: 10px;
+            margin-right: 3px;
+        }
+    }
+    .row {
+        .topic,
+        .content-mask,
+        .options {
+            margin-left: 0;
+            margin-right: 48px;
         }
     }
 }
 
 .forumpost .row .left {
-    width: auto;
+    width: 48px;
 }
 
 .forumpost .options .commands {
@@ -71,12 +112,9 @@ select {
      margin-bottom: 0 !important;
 }
 
-#page-mod-forum-discuss .discussioncontrol.displaymode {
-    text-align: left;
-}
-
-#page-mod-forum-discuss .discussioncontrols .discussioncontrol {
-    float: left;
+#page-mod-forum-discuss .discussioncontrols {
+    width: auto;
+    margin: 0;
 }
 
 #page-footer {
