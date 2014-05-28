@@ -158,6 +158,13 @@ $THEME->layouts = array(
         'regions' => array('side-pre'),
         'defaultregion' => 'side-pre',
     ),
+    // The pagelayout used for grader reports.
+    'gradereport' => array(
+        'file' => 'report.php',
+        'regions' => array('side-pre'),
+        'defaultregion' => 'side-pre',
+    ),
+
     // The pagelayout used for safebrowser and securewindow.
     'secure' => array(
         'file' => 'general.php',
