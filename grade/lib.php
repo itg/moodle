@@ -844,7 +844,7 @@ function print_grade_page_head($courseid, $active_type, $active_plugin=null,
     }
 
     if ($active_type == 'report') {
-        $PAGE->set_pagelayout('report');
+        $PAGE->set_pagelayout('gradereport');
     } else {
         $PAGE->set_pagelayout('admin');
     }
