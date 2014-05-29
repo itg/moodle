@@ -354,11 +354,7 @@
     $table->define_headers($tableheaders);
     $table->define_baseurl($baseurl->out());
 
-    if (!isset($hiddenfields['lastaccess'])) {
-        $table->sortable(true, 'lastaccess', SORT_DESC);
-    } else {
-        $table->sortable(true, 'firstname', SORT_ASC);
-    }
+    $table->sortable(true, 'lastname');
 
     $table->no_sorting('roles');
     $table->no_sorting('groups');
