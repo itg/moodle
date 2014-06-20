@@ -34,6 +34,7 @@ composer.lock
 */yui/build/*/*-coverage.js
 /lib/yuilib/*/build/*/*-coverage.js
 mmcc/geolabs
+mmcc/constants.php
 
 # Begin MMCC Moodle Plugins
 ## Managed by git (i.e. they are in their own git repo / git pull to upgrade )
