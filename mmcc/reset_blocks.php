@@ -3,6 +3,8 @@
 ini_set ('display_errors', 1);
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
+define('CLI_SCRIPT', true);
+
 require_once('../config.php');
 require_once($CFG->libdir.'/blocklib.php');
 
