@@ -289,6 +289,19 @@ class enrol_database_plugin extends enrol_plugin {
      * @return int 0 means success, 1 db connect failure, 2 db read failure
      */
     public function sync_enrolments(progress_trace $trace, $onecourse = null) {
+        return sync_enrolments_partial($trace, $onecourse, []);
+    }
+
+    /**
+     * Forces synchronisation of enrolments with external database.
+     *
+     * @param progress_trace $trace
+     * @param null|int $onecourse limit sync to one course only (used primarily in restore)
+     * @param array $category_ids limit sync to the specified course categories; if no categories, sync all courses
+     * @return int 0 means success, 1 db connect failure, 2 db read failure
+     */
+    public function sync_enrolments_partial(progress_trace $trace, $onecourse = null, array $category_ids=array()) {
+
         global $CFG, $DB;
 
         // We do not create courses here intentionally because it requires full sync and is slow.
@@ -389,7 +402,7 @@ class enrol_database_plugin extends enrol_plugin {
 
             // First find all existing courses with enrol instance.
             $existing = array();
-            $sql = "SELECT c.id, c.visible, c.$localcoursefield AS mapping, e.id AS enrolid, c.shortname
+            $sql = "SELECT c.id, c.visible, c.$localcoursefield AS mapping, e.id AS enrolid, c.shortname, c.category
                       FROM {course} c
                       JOIN {enrol} e ON (e.courseid = c.id AND e.enrol = 'database')";
             $rs = $DB->get_recordset_sql($sql); // Watch out for idnumber duplicates.
@@ -409,7 +422,7 @@ class enrol_database_plugin extends enrol_plugin {
                 $localnotempty =  "AND c.$localcoursefield <> :lcfe";
                 $params['lcfe'] = '';
             }
-            $sql = "SELECT c.id, c.visible, c.$localcoursefield AS mapping, c.shortname
+            $sql = "SELECT c.id, c.visible, c.$localcoursefield AS mapping, c.shortname, c.category
                       FROM {course} c
                  LEFT JOIN {enrol} e ON (e.courseid = c.id AND e.enrol = 'database')
                      WHERE e.id IS NULL $localnotempty";
@@ -446,7 +459,18 @@ class enrol_database_plugin extends enrol_plugin {
         if ($rolefield) {
             $sqlfields[] = $rolefield;
         }
+        $partial_sync = 0 < count($category_ids);
+        if ($partial_sync) {
+            $trace->output("Only syncing user enrollment in categories: '" . implode("','", $category_ids) . "' ", 1);
+        }
         foreach ($existing as $course) {
+            // If we are only syncing certain course categories
+            //   and this course is not in a category that we are syncing, skip it
+            if ($partial_sync and !in_array($course->category, $category_ids)) {
+                $trace->output("Skipping user enrollment sync in course '$course->mapping' in category '$course->category'", 1);
+                continue;
+            }
+
             if ($ignorehidden and !$course->visible) {
                 continue;
             }
