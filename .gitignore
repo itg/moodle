@@ -13,6 +13,7 @@
 /lib/editor/tinymce/extra/tools/temp/
 *~
 *.swp
+*.pyc
 /tags
 /TAGS
 /cscope.*
