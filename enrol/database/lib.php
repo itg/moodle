@@ -282,17 +282,6 @@ class enrol_database_plugin extends enrol_plugin {
     }
 
     /**
-     * Forces synchronisation of all enrolments with external database.
-     *
-     * @param progress_trace $trace
-     * @param null|int $onecourse limit sync to one course only (used primarily in restore)
-     * @return int 0 means success, 1 db connect failure, 2 db read failure
-     */
-    public function sync_enrolments(progress_trace $trace, $onecourse = null) {
-        return sync_enrolments_partial($trace, $onecourse, []);
-    }
-
-    /**
      * Forces synchronisation of enrolments with external database.
      *
      * @param progress_trace $trace
@@ -625,6 +614,17 @@ class enrol_database_plugin extends enrol_plugin {
         $trace->finished();
 
         return 0;
+    }
+
+    /**
+     * Forces synchronisation of all enrolments with external database.
+     *
+     * @param progress_trace $trace
+     * @param null|int $onecourse limit sync to one course only (used primarily in restore)
+     * @return int 0 means success, 1 db connect failure, 2 db read failure
+     */
+    public function sync_enrolments(progress_trace $trace, $onecourse = null) {
+        return $this->sync_enrolments_partial($trace, $onecourse, []);
     }
 
     /**
