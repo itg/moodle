@@ -28,5 +28,3 @@ $module->component = 'mod_assign'; // Full name of the plugin (used for diagnost
 $module->version  = 2014010801;    // The current module version (Date: YYYYMMDDXX).
 $module->requires = 2013110500;    // Requires this Moodle version.
 $module->cron     = 60;
-
-
