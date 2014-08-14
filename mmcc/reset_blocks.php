@@ -16,8 +16,8 @@ global $DB;
 // A single course by synonym:
 // 		$courses = $DB->get_records('course', array('idnumber'=>'45663'));
 
-//$courses = $DB->get_records('course', array('category'=>'9'));
-$courses = $DB->get_records('course', array('idnumber'=>'46875'));
+//$courses = $DB->get_records('course', array('category'=>'111'));
+$courses = $DB->get_records('course', array('idnumber'=>'314159265'));
 
 $course_count = 0;
 
