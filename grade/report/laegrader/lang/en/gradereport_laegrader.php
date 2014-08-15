@@ -23,7 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['accuratetotals'] = 'Accurate POINT TOTALS (LAE User report should be used also if Accurate Points is turned on so report totals agree - available at http://github.com/bobpuffer/laeuser.git)';
+$string['accuratetotals'] = 'Accurate POINT TOTALS (may conflict with Aggregate only non-empty grades setting)';
 $string['ajaxclicktoclose'] = 'Click this box to remove it';
 $string['ajaxerror'] = 'Error';
 $string['ajaxfailedupdate'] = 'Unable to update [1] for [2]';
