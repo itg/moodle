@@ -80,9 +80,9 @@ try:
 
 except mysql.connector.Error as err:
     # Cleanup, print error message, and die
+    print(err)
     moodle_conn.close()
     smart_conn.close()
-    print(err)
     sys.exit(10) 
     
 semesters = get_semesters_to_sync(smart_conn)
