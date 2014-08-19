@@ -323,7 +323,7 @@ if (!isset($hiddenfields['mycourses'])) {
                         if (!has_capability('moodle/course:viewhiddencourses', $ccontext)) {
                             continue;
                         }
-                        $class = 'class="dimmed"';
+                        $class = 'dimmed';
                     }
                     $params = array('id' => $user->id, 'course' => $mycourse->id);
                     if ($showallcourses) {
