@@ -17,7 +17,8 @@ global $DB;
 // 		$courses = $DB->get_records('course', array('idnumber'=>'45663'));
 
 //$courses = $DB->get_records('course', array('category'=>'111'));
-$courses = $DB->get_records('course', array('idnumber'=>'314159265'));
+//$courses = $DB->get_records('course', array('idnumber'=>'314159265'));
+//$courses = $DB->get_records('course', array('id'=>'15429'));
 
 $course_count = 0;
 
