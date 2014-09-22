@@ -71,7 +71,12 @@ class block_course_overview extends block_base {
         profile_load_custom_fields($USER);
 
         $showallcourses = ($updatemynumber === self::SHOW_ALL_COURSES);
-        list($sortedcourses, $sitecourses, $totalcourses) = block_course_overview_get_sorted_courses($showallcourses);
+
+        //Get a list of category ids for which to show all courses, even if the user does not have the moodle/course:viewhiddencourses capability
+        require($CFG->dirroot.'/mmcc/smart_utils.php');
+        $active_category_ids = smart_active_moodle_categories();
+
+        list($sortedcourses, $sitecourses, $totalcourses) = block_course_overview_get_sorted_courses($showallcourses, $active_category_ids);
         $overviews = block_course_overview_get_overviews($sitecourses);
 
         $renderer = $this->page->get_renderer('block_course_overview');

@@ -163,12 +163,12 @@ function block_course_overview_get_max_user_courses($showallcourses = false) {
  * @param bool $showallcourses if set true all courses will be visible.
  * @return array list of sorted courses and count of courses.
  */
-function block_course_overview_get_sorted_courses($showallcourses = false) {
+function block_course_overview_get_sorted_courses($showallcourses = false, $showhidden=array()) {
     global $USER;
 
     $limit = block_course_overview_get_max_user_courses($showallcourses);
 
-    $courses = enrol_get_my_courses();
+    $courses = enrol_get_my_courses(NULL, 'visible DESC,sortorder ASC', 0, $showhidden);
     $site = get_site();
 
     if (array_key_exists($site->id,$courses)) {
