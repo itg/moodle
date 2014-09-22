@@ -1988,9 +1988,10 @@ class core_course_renderer extends plugin_renderer_base {
      *
      * Also lists remote courses or remote hosts if MNET authorisation is used
      *
+     * @param array $showhidden allow hidden courses in these categories to be shown even if the user does not have the moodle/course:viewhiddencourses capability
      * @return string
      */
-    public function frontpage_my_courses() {
+    public function frontpage_my_courses(array $showhidden=array()) {
         global $USER, $CFG, $DB;
 
         if (!isloggedin() or isguestuser()) {
@@ -2004,7 +2005,7 @@ class core_course_renderer extends plugin_renderer_base {
         } else {
             $sortorder = 'visible DESC,sortorder ASC';
         }
-        $courses  = enrol_get_my_courses('summary, summaryformat', $sortorder);
+        $courses  = enrol_get_my_courses('summary, summaryformat', $sortorder, 0 , $showhidden);
         $rhosts   = array();
         $rcourses = array();
         if (!empty($CFG->mnet_dispatcher_mode) && $CFG->mnet_dispatcher_mode==='strict') {
