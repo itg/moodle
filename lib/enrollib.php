@@ -546,10 +546,12 @@ function enrol_add_course_navigation(navigation_node $coursenode, $course) {
  * @param string $sort
  * @param int $limit max number of courses
  * @param array $courseids the list of course ids to filter by
+ * @param array $showhidden allow hidden courses in these categories to be shown even if the user does not have the moodle/course:viewhiddencourses capability
  * @return array
  */
 function enrol_get_my_courses($fields = null, $sort = 'visible DESC,sortorder ASC',
-                              $limit = 0, $courseids = []) {
+                              $limit = 0, $courseids = [],
+                              array $showhidden=array()) {
     global $DB, $USER;
 
     // Guest account does not have any courses
@@ -643,7 +645,12 @@ function enrol_get_my_courses($fields = null, $sort = 'visible DESC,sortorder AS
                 continue;
             }
             if (!has_capability('moodle/course:viewhiddencourses', $context)) {
-                unset($courses[$id]);
+                if (0 < count($showhidden) && in_array($course->category, $showhidden)) {
+                    //Do nothing - we want to allow this course to be shown
+                }
+                else {
+                    unset($courses[$id]);
+                }
                 continue;
             }
         }

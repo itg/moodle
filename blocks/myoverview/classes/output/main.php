@@ -63,7 +63,10 @@ class main implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
         global $USER;
 
-        $courses = enrol_get_my_courses('*', 'fullname ASC');
+        require($CFG->dirroot.'/mmcc/smart_utils.php');
+        $active_category_ids = smart_active_moodle_categories();
+
+        $courses = enrol_get_my_courses('*', 'fullname ASC', 0, [], $active_category_ids);
         $coursesprogress = [];
 
         foreach ($courses as $course) {
