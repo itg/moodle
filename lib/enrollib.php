@@ -608,13 +608,17 @@ function enrol_get_my_courses($fields = NULL, $sort = 'visible DESC,sortorder AS
                 continue;
             }
             if (!has_capability('moodle/course:viewhiddencourses', $context)) {
+                $hide_this_course = true;
                 if (0 < count($showhidden) && in_array($course->category, $showhidden)) {
-                    //Do nothing - we want to allow this course to be shown
+                    //We want to allow this course to be shown
+                    //  unless it is a child of a metacourse
+                    $hide_this_course = $DB->record_exists('enrol', array('customint1'=>$id, 'enrol'=>'meta'));
                 }
-                else {
+
+                if ($hide_this_course) {
                     unset($courses[$id]);
+                    continue;
                 }
-                continue;
             }
         }
         $courses[$id] = $course;
