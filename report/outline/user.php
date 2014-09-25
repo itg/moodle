@@ -75,6 +75,8 @@ $modinfo = get_fast_modinfo($course);
 $sections = $modinfo->get_section_info_all();
 $itemsprinted = false;
 
+echo html_writer::tag('h2', fullname($user));
+
 foreach ($sections as $i => $section) {
 
         if ($section->uservisible) { // prevent hidden sections in user activity. Thanks to Geoff Wilbert!
