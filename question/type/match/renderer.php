@@ -92,6 +92,14 @@ class qtype_match_renderer extends qtype_with_combined_feedback_renderer {
         $result .= html_writer::end_tag('tbody');
         $result .= html_writer::end_tag('table');
 
+        // Generate a list of responses for question printing
+        $answers = '<p>' . get_string('availablechoices', 'qtype_match') . '</p><ul>';
+        foreach($choices as $choice) {
+            $answers .= '<li>' . $choice . '</li>';
+        }
+        $answers .= '</ul>';
+        $result .= html_writer::tag('div', $answers, array('class' => 'print-show-only'));
+
         $result .= html_writer::end_tag('div'); // Closes <div class="ablock">.
 
         if ($qa->get_state() == question_state::$invalid) {
