@@ -59,7 +59,7 @@ foreach($courses_rs as $course) {
             $quickmail_block = $DB->get_record('block_instances', $qm_exists_conditions);
             if (0 < count($force_replace_cats) && in_array($course->category, $force_replace_cats)) {
                 $change_count++;
-                $change_me = "Force-replacing Quickmail block with Clampmail in course '{$course->fullname}'";
+                $change_me = "M: Force-replacing Quickmail block with Clampmail in course '{$course->fullname}'";
                 //Delete Quickmail history
                 $DB->delete_records('block_quickmail_log', array('courseid'=>$context->id));
                 //Convert to Clampmail
@@ -67,18 +67,18 @@ foreach($courses_rs as $course) {
             }
             else {
                 if (0 < $DB->count_records('block_quickmail_log', array('courseid'=>$course->id))) {
-                    $change_me = "Quickmail history exists - leaving this block alone";
+                    $change_me = "N: Quickmail history exists - leaving this block alone";
                 }
                 else {
                     $cm_exists_conditions = array('parentcontextid'=>$context->id, 'blockname'=>'clampmail');
                     if ($DB->record_exists('block_instances', $cm_exists_conditions)) {
                         $change_count++;
-                        $change_me = "Found Clampmail block - deleting Quickmail block (leaving Clampmail block alone)";
+                        $change_me = "M: Found Clampmail block - deleting Quickmail block (leaving Clampmail block alone)";
                         $DB->delete_records('block_instances', $qm_exists_conditions);
                     }
                     else {
                         $change_count++;
-                        $change_me = "Converting Quickmail block to Clampmail block";
+                        $change_me = "M: Converting Quickmail block to Clampmail block";
                         $DB->update_record('block_instances', array('id'=>$quickmail_block->id, 'blockname'=>'clampmail'));
                     }
                 }
