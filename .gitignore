@@ -43,6 +43,7 @@ blocks/attendance
 blocks/moodleblock
 blocks/quickset
 blocks/quickfindlist
+blocks/sharing_cart
 
 lib/editor/tinymce/plugins/hideabox
 
