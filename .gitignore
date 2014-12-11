@@ -47,6 +47,8 @@ blocks/sharing_cart
 
 lib/editor/tinymce/plugins/hideabox
 
+local/loginas
+
 #Part of the Moodle git fork from CLAMP that we are using
 #local/lae
 
@@ -58,8 +60,6 @@ theme/essential
 blocks/sharing_cart
 
 filter/nanogong
-
-local/loginas
 
 mod/bigbluebuttonbn
 mod/hotpot
