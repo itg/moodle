@@ -90,6 +90,7 @@ foreach($courses_rs as $course) {
         }
     }
     catch (Exception $e) {
+        $error_count++;
         echo "Error occurred while processing course '{$course->fullname}' (id:{$course->id}): {$e->getMessage()}\n";
         echo "Moving to next course\n";
     }
