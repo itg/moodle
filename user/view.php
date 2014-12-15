@@ -405,6 +405,20 @@ if (empty($CFG->forceloginforprofiles) || $currentuser || has_capability('moodle
     echo '</div>';
 }
 
+if (has_capability('moodle/grade:viewall', $coursecontext) ||
+    ($currentuser && has_all_capabilities(array('moodle/grade:view','gradereport/user:view'), $coursecontext))) {
+    echo '<div class="grades_link_course">';
+    echo html_writer::link($CFG->wwwroot . '/grade/report/user/index.php?&id=' . $courseid . '&userid=' . $user->id, 'Course Grades');
+    echo '</div>';
+}
+
+if (($currentuser && has_capability('gradereport/overview:view', $coursecontext)) ||
+    has_all_capabilities(array('gradereport/overview:view','moodle/grade:viewall'), $coursecontext)) {
+    echo '<div class="grades_link_overview">';
+    echo html_writer::link($CFG->wwwroot . '/grade/report/overview/index.php?id=' . $courseid . '&userid=' . $user->id, 'Grade Overview');
+    echo '</div>';
+}
+
 // TODO Add more useful overview info for teachers here, see below.
 // Show links to notes made about this student (must click to display, for privacy).
 // Recent comments made in this course.
