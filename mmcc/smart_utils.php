@@ -29,7 +29,7 @@ function smart_active_moodle_categories() {
         $smart_sql = <<<EOD
 SELECT name
 FROM terms
-WHERE 7 >= DATEDIFF(start, NOW())
+WHERE 30 >= DATEDIFF(start, NOW())
 AND -7 <= DATEDIFF(end, NOW())
 ORDER BY start
 EOD;
