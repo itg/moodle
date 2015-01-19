@@ -78,19 +78,19 @@ function get_number_of_students()
 function generate_student_table ()
 {
 	//Get data from DB view
-	$sql = "SELECT `lastname`, `firstname`, `lastlogin` FROM " . STUDENTVIEW;
+	$sql = "SELECT `rep`, `lastname`, `firstname`, `student_id`, `lastlogin` FROM " . STUDENTVIEW;
 	$rs = mysql_query($sql) or die("Query failed: $sql");
 
 	//Create the HTML output
 	echo "<table>\n";
-	echo "<tr>\n\t<th>Last Name</th>\n\t<th>First Name</th>\n\t<th>Last Moodle Login</th>\n</tr>\n";
+	echo "<tr>\n\t<th>Rep</th>\n\t<th>Last Name</th>\n\t<th>First Name</th>\n\t<th>Last Moodle Login</th>\n</tr>\n";
 
 	//Actual data the user cares about
 	while ($row = mysql_fetch_array($rs, MYSQL_NUM)) {
 		echo format_output($row);
 	}
 
-	echo "<tr>\n\t<th>Last Name</th>\n\t<th>First Name</th>\n\t<th>Last Moodle Login</th>\n</tr>\n";
+	echo "<tr>\n\t<th>Rep</th>\n\t<th>Last Name</th>\n\t<th>First Name</th>\n\t<th>Last Moodle Login</th>\n</tr>\n";
 	echo "</table>\n";
 }
 
@@ -98,7 +98,7 @@ function generate_student_table ()
 //If the underlying view changes, this function will need to change as well
 function format_output($row)
 {
-	return "<tr>\n\t<td>" . $row[0] . "</td>\n\t<td>" . $row[1] . "</td>\n\t<td class='ralign'>" . $row[2] . "</td>\n</tr>\n";
+	return "<tr>\n\t<td>" . $row[0] . "</td>\n\t<td>" . $row[1] . "</td>\n\t<td>" . $row[2] . "</td>\n\t<td class='ralign'>" . $row[4] . "</td>\n</tr>\n";
 }
 
 
