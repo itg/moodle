@@ -36,8 +36,7 @@ sort($blocks_indicating_reset_needed);
 
 //$conditions = array('category'=>'109'); //2015wi
 
-// fix kelley psy course
-$conditions = array('id'=>'18433');                    //Get courses by course id (e.g. from URL)
+$conditions = array('id'=>'15429');                    //Get courses by course id (e.g. from URL)
 
 $num_matched_courses = $DB->count_records('course', $conditions);
 echo "Started at ". date('Y-m-d h:i:s a', time());
