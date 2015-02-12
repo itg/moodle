@@ -169,7 +169,15 @@ class grade_report_overview extends grade_report {
                     if ($course_grade->is_hidden()) {
                         $finalgrade = null;
                     } else {
-                        $finalgrade = $this->blank_hidden_total($course->id, $course_item, $finalgrade);
+                        $adjustedgrade = $this->blank_hidden_total_and_adjust_bounds($course->id,
+                                                                                     $course_item,
+                                                                                     $finalgrade);
+
+                        // We temporarily adjust the view of this grade item - because the min and
+                        // max are affected by the hidden values in the aggregation.
+                        $finalgrade = $adjustedgrade['grade'];
+                        $course_item->grademax = $adjustedgrade['grademax'];
+                        $course_item->grademin = $adjustedgrade['grademin'];
                     }
                 }
 
@@ -241,7 +249,7 @@ function grade_report_overview_settings_definition(&$mform) {
                       0 => get_string('hide'),
                       1 => get_string('show'));
 
-    if (empty($CFG->grade_overviewreport_showrank)) {
+    if (empty($CFG->grade_report_overview_showrank)) {
         $options[-1] = get_string('defaultprev', 'grades', $options[0]);
     } else {
         $options[-1] = get_string('defaultprev', 'grades', $options[1]);
