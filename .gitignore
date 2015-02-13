@@ -49,23 +49,31 @@ lib/editor/tinymce/plugins/hideabox
 
 local/loginas
 
-#Part of the Moodle git fork from CLAMP that we are using
-#local/lae
-
 mod/attendance
 
 theme/essential
 
-## NOT managed by git (i.e. download & replace to upgrade)
-blocks/sharing_cart
+#Part of the Moodle git fork from CLAMP that we are using
+#local/lae
 
+## NOT managed by git (i.e. download & replace to upgrade)
 filter/nanogong
 
+#https://github.com/blindsidenetworks/moodle-mod_bigbluebuttonbn
 mod/bigbluebuttonbn
+
 mod/hotpot
+
+#https://github.com/netspotau/moodle-mod_lightboxgallery
 mod/lightboxgallery
+
 mod/nanogong
+
+#https://github.com/moodleou/moodle-mod_oublog
 mod/oublog
+
 mod/quiz/report/cbmgrades
+
+#https://github.com/blindsidenetworks/moodle-mod_recordingsbn
 mod/recordingsbn
 # End MMCC Moodle Plugins
