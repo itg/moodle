@@ -51,6 +51,8 @@ local/loginas
 
 mod/attendance
 
+report/editdates
+
 theme/essential
 
 #Part of the Moodle git fork from CLAMP that we are using
