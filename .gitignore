@@ -58,6 +58,7 @@ mod/attendance
 report/editdates
 
 theme/essential
+theme/get_more
 
 #Part of the Moodle git fork from CLAMP that we are using
 #local/lae
@@ -82,4 +83,10 @@ mod/quiz/report/cbmgrades
 
 #https://github.com/blindsidenetworks/moodle-mod_recordingsbn
 mod/recordingsbn
+
+## Socialwall plugins (not managed by git, yet)
+course/format/socialwall/
+blocks/alerts/
+filter/urlresource/
+local/filterurlresbak/
 # End MMCC Moodle Plugins
