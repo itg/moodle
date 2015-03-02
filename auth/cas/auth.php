@@ -130,8 +130,27 @@ class auth_plugin_cas extends auth_plugin_ldap {
             }
 
             $authCAS = optional_param('authCAS', '', PARAM_RAW);
-            if ($authCAS == 'NOCAS') {
+            // If the user explicity asked for a CAS/NOCAS login
+            // do what the user asked for
+            if (('NOCAS' == $authCAS) || ('CAS' == $authCAS)) {
+                if ('NOCAS' == $authCAS) {
+                    // Send the user to the manual login form
+                    return;
+                }
+                else if ('CAS' == $authCAS) {
+                    // Send the user to CAS for authentication automatically
+                }
+            }
+            // The user did not explictly ask for a CAS/NOCAS login URL
+            // and if the user has an existing manual login cookie
+            // (to remember their username)
+            // send the user to the manual login form
+            else if ('' != get_moodle_cookie()) {
                 return;
+            }
+            else {
+                // Send the user to CAS for authentication automatically
+                $authCAS = 'CAS';
             }
             // Show authentication form for multi-authentication.
             // Test pgtIou parameter for proxy mode (https connection in background from CAS server to the php server).
