@@ -123,6 +123,10 @@ class auth_plugin_cas extends auth_plugin_ldap {
             if ($authCAS == 'NOCAS') {
                 return;
             }
+            else {
+                // Send the user to CAS for authentication automatically
+                $authCAS = 'CAS';
+            }
             // Show authentication form for multi-authentication.
             // Test pgtIou parameter for proxy mode (https connection in background from CAS server to the php server).
             if ($authCAS != 'CAS' && !isset($_GET['pgtIou'])) {
