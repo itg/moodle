@@ -139,6 +139,7 @@ $string['allparticipants'] = 'All participants';
 $string['allteachers'] = 'All teachers';
 $string['alphanumerical'] = 'Can only contain alphanumeric characters, hyphen (-) or period (.)';
 $string['alreadyconfirmed'] = 'Registration has already been confirmed';
+$string['alternateloginprompt'] = 'Have a Moodle-specific account? {$a}';
 $string['alternatename'] = 'Alternate name';
 $string['always'] = 'Always';
 $string['and'] = '{$a->one} and {$a->two}';
