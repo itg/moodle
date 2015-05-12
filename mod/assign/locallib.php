@@ -4328,6 +4328,7 @@ class assign {
                 $this->get_grading_status($grade->userid) != ASSIGN_MARKING_WORKFLOW_STATE_RELEASED) {
             // Remove the grade (if it exists) from the gradebook as it is not 'final'.
             $grade->grade = -1;
+            $grade->feedbacktext = '';
         }
 
         if ($submission != null) {
@@ -7094,16 +7095,19 @@ class assign {
                                                 $where, $params);
 
         foreach ($graderesults as $result) {
-            $gradebookgrade = clone $result;
-            // Now get the feedback.
-            if ($gradebookplugin) {
-                $grade = $this->get_user_grade($result->userid, false);
-                if ($grade) {
-                    $gradebookgrade->feedbacktext = $gradebookplugin->text_for_gradebook($grade);
-                    $gradebookgrade->feedbackformat = $gradebookplugin->format_for_gradebook($grade);
+            $gradingstatus = $this->get_grading_status($result->userid);
+            if (!$this->get_instance()->markingworkflow || $gradingstatus == ASSIGN_MARKING_WORKFLOW_STATE_RELEASED) {
+                $gradebookgrade = clone $result;
+                // Now get the feedback.
+                if ($gradebookplugin) {
+                    $grade = $this->get_user_grade($result->userid, false);
+                    if ($grade) {
+                        $gradebookgrade->feedback = $gradebookplugin->text_for_gradebook($grade);
+                        $gradebookgrade->feedbackformat = $gradebookplugin->format_for_gradebook($grade);
+                    }
                 }
+                $grades[$gradebookgrade->userid] = $gradebookgrade;
             }
-            $grades[$gradebookgrade->userid] = $gradebookgrade;
         }
 
         $graderesults->close();
