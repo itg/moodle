@@ -44,6 +44,7 @@ mmcc/constants.php
 # Begin MMCC Moodle Plugins
 ## Managed by git (i.e. they are in their own git repo / git pull to upgrade )
 admin/tool/heartbeat
+admin/tool/editrolesbycap/
 
 blocks/attendance
 blocks/moodleblock
@@ -51,6 +52,10 @@ blocks/quickset
 blocks/quickfindlist
 blocks/sharing_cart
 
+lib/editor/atto/plugins/fontsize/
+lib/editor/atto/plugins/fullscreen/
+lib/editor/atto/plugins/hr/
+lib/editor/atto/plugins/imagedragdrop/
 lib/editor/tinymce/plugins/hideabox
 
 local/codechecker
