@@ -688,8 +688,6 @@ class core_renderer extends renderer_base {
             $loggedinas = get_string('loggedinnot', 'moodle');
             if (!$loginpage && $withlinks) {
                 $loggedinas .= " (<a href=\"$loginurl\">".get_string('login').'</a>)';
-                // Give non-CAS users a link to click to get to the login form
-                $loggedinas .= '<br />' . get_string('alternateloginprompt', 'moodle', html_writer::tag('a', get_string('clickhere'), array('href' => $loginurl . '?authCAS=NOCAS')));
             }
         }
 
