@@ -37,7 +37,18 @@ require(__DIR__.'/../../../config.php');
 require_once("$CFG->libdir/clilib.php");
 
 // Now get cli options.
-list($options, $unrecognized) = cli_get_params(array('verbose'=>false, 'help'=>false, 'categories'=>array()), array('v'=>'verbose', 'h'=>'help', 'c'=>'categories'));
+list($options, $unrecognized) = cli_get_params(
+                                    array(
+                                        'verbose'=>false,
+                                        'info'=>false,
+                                        'help'=>false,
+                                        'categories'=>array()),
+                                    array(
+                                        'v'=>'verbose',
+                                        'i'=>'info',
+                                        'h'=>'help',
+                                        'c'=>'categories')
+                                    );
 
 //Transform category param
 if ($options['categories']) {
@@ -56,14 +67,17 @@ The enrol_database plugin must be enabled and properly configured.
 If no category ids are passed, courses in all categories are synced.
 
 Options:
--v, --verbose         Print verbose progress information
--h, --help            Print out this help
+-i, --info            Output less-detailed progress information
+-v, --verbose         Output more-detailed progress information
+                        Implies -i
+-h, --help            Print out this help text
 -c, --categories      A list of category ids
                         Only courses in these categories are synced.
 
 Example:
 \$ sudo -u www-data /usr/bin/php enrol/database/cli/sync.php
-\$ sudo -u www-data /usr/bin/php enrol/database/cli/sync.php -v -c=25,50
+\$ sudo -u www-data /usr/bin/php enrol/database/cli/sync.php -v
+\$ sudo -u www-data /usr/bin/php enrol/database/cli/sync.php -i -c=25,50
 
 Sample cron entry:
 # 5 minutes past 4am
@@ -78,7 +92,7 @@ if (!enrol_is_enabled('database')) {
     cli_error('enrol_database plugin is disabled, synchronisation stopped', 2);
 }
 
-if (empty($options['verbose'])) {
+if (empty($options['verbose']) and empty($options['info'])) {
     $trace = new null_progress_trace();
 } else {
     $trace = new text_progress_trace();
@@ -89,6 +103,6 @@ $enrol = enrol_get_plugin('database');
 $result = 0;
 
 $result = $result | $enrol->sync_courses($trace);
-$result = $result | $enrol->sync_enrolments_partial($trace, NULL, $options['categories']);
+$result = $result | $enrol->sync_enrolments_partial($trace, NULL, $options['categories'], $options['info'], $options['verbose']);
 
 exit($result);
