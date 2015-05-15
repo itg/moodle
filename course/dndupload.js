@@ -116,7 +116,7 @@ M.course_dndupload = {
             return;
         }
 
-        div = Y.Node.create('<div id="dndupload-status"></div>').setStyle('opacity', '0.0');
+        div = Y.Node.create('<div id="dndupload-status"></div>').setStyle('opacity', '0.0').setStyle('zIndex', '-1');
         coursecontents.insert(div, 0);
 
         for (i = 0; i < this.handlers.types.length; i++) {
@@ -150,12 +150,14 @@ M.course_dndupload = {
             node: '#dndupload-status',
             from: {
                 opacity: 0.0,
-                top: (styletop - 30).toString() + styletopunit
+                top: (styletop - 30).toString() + styletopunit,
+                zIndex: -1
             },
 
             to: {
                 opacity: 1.0,
-                top: styletop.toString() + styletopunit
+                top: styletop.toString() + styletopunit,
+                zIndex: 1
             },
             duration: 0.5
         });
