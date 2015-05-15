@@ -314,7 +314,7 @@ class enrol_database_plugin extends enrol_plugin {
      * @return int 0 means success, 1 db connect failure, 2 db read failure
      */
     public function sync_enrolments(progress_trace $trace, $onecourse = null) {
-        return sync_enrolments_partial($trace, $onecourse, []);
+        return $this->sync_enrolments_partial($trace, $onecourse, [], true, true);
     }
 
     /**
@@ -323,11 +323,18 @@ class enrol_database_plugin extends enrol_plugin {
      * @param progress_trace $trace
      * @param null|int $onecourse limit sync to one course only (used primarily in restore)
      * @param array $category_ids limit sync to the specified course categories; if no categories, sync all courses
+     * @param null|bool $trace_concise output status and error messages
+     * @param null|bull $trace_verbose output status, error, and informational messages
      * @return int 0 means success, 1 db connect failure, 2 db read failure
      */
-    public function sync_enrolments_partial(progress_trace $trace, $onecourse = null, array $category_ids=array()) {
+    public function sync_enrolments_partial(progress_trace $trace, $onecourse = null, array $category_ids=array(), $trace_concise=false, $trace_verbose=false) {
 
         global $CFG, $DB;
+
+        //Enforce outputting verbose info implies outputting concise info
+        if ($trace_verbose) {
+            $trace_concise = true;
+        }
 
         // We do not create courses here intentionally because it requires full sync and is slow.
         if (!$this->get_config('dbtype') or !$this->get_config('remoteenroltable') or !$this->get_config('remotecoursefield') or !$this->get_config('remoteuserfield')) {
@@ -424,7 +431,9 @@ class enrol_database_plugin extends enrol_plugin {
             }
             $preventfullunenrol = empty($externalcourses);
             if ($preventfullunenrol and $unenrolaction == ENROL_EXT_REMOVED_UNENROL) {
-                $trace->output('Preventing unenrolment of all current users, because it might result in major data loss, there has to be at least one record in external enrol table, sorry.', 1);
+                if ($trace_verbose) {
+                    $trace->output('info: preventing unenrolment of all current users, because it might result in major data loss, there has to be at least one record in external enrol table, sorry.', 1);
+                }
             }
 
             // First find all existing courses with enrol instance.
@@ -471,7 +480,9 @@ class enrol_database_plugin extends enrol_plugin {
             // Print list of missing courses.
             if ($externalcourses) {
                 $list = implode(', ', array_keys($externalcourses));
-                $trace->output("error: following courses do not exist - $list", 1);
+                if ($trace_verbose) {
+                    $trace->output("info: following courses do not exist - $list", 1);
+                }
                 unset($list);
             }
 
@@ -491,13 +502,17 @@ class enrol_database_plugin extends enrol_plugin {
         }
         $partial_sync = 0 < count($category_ids);
         if ($partial_sync) {
-            $trace->output("Only syncing user enrollment in categories: '" . implode("','", $category_ids) . "' ", 1);
+            if ($trace_verbose) {
+                $trace->output("info: only syncing user enrollment in categories: '" . implode("','", $category_ids) . "' ", 1);
+            }
         }
         foreach ($existing as $course) {
             // If we are only syncing certain course categories
             //   and this course is not in a category that we are syncing, skip it
             if ($partial_sync and !in_array($course->category, $category_ids)) {
-                $trace->output("Skipping user enrollment sync in course '$course->mapping' in category '$course->category'", 1);
+                if ($trace_verbose) {
+                    $trace->output("info: skipping user enrollment sync in course '$course->mapping' in category '$course->category'", 1);
+                }
                 continue;
             }
 
@@ -549,14 +564,18 @@ class enrol_database_plugin extends enrol_plugin {
                     while ($fields = $rs->FetchRow()) {
                         $fields = array_change_key_case($fields, CASE_LOWER);
                         if (empty($fields[$userfield_l])) {
-                            $trace->output("error: skipping user without mandatory $localuserfield in course '$course->mapping'", 1);
+                            if ($trace_concise) {
+                                $trace->output("error: skipping user without mandatory $localuserfield in course '$course->mapping'", 1);
+                            }
                             continue;
                         }
                         $mapping = $fields[$userfield_l];
                         if (!isset($usermapping[$mapping])) {
                             $usersearch[$localuserfield] = $mapping;
                             if (!$user = $DB->get_record('user', $usersearch, 'id', IGNORE_MULTIPLE)) {
-                                $trace->output("error: skipping unknown user $localuserfield '$mapping' in course '$course->mapping'", 1);
+                                if ($trace_verbose) {
+                                    $trace->output("info: skipping unknown user $localuserfield '$mapping' in course '$course->mapping'", 1);
+                                }
                                 continue;
                             }
                             $usermapping[$mapping] = $user->id;
@@ -566,7 +585,9 @@ class enrol_database_plugin extends enrol_plugin {
                         }
                         if (empty($fields[$rolefield_l]) or !isset($roles[$fields[$rolefield_l]])) {
                             if (!$defaultrole) {
-                                $trace->output("error: skipping user '$userid' in course '$course->mapping' - missing course and default role", 1);
+                                if ($trace_concise) {
+                                    $trace->output("error: skipping user '$userid' in course '$course->mapping' - missing course and default role", 1);
+                                }
                                 continue;
                             }
                             $roleid = $defaultrole;
@@ -582,7 +603,9 @@ class enrol_database_plugin extends enrol_plugin {
                 }
                 $rs->Close();
             } else {
-                $trace->output("error: skipping course '$course->mapping' - could not match with external database", 1);
+                if ($trace_concise) {
+                    $trace->output("error: skipping course '$course->mapping' - could not match with external database", 1);
+                }
                 continue;
             }
             unset($usermapping);
@@ -612,7 +635,9 @@ class enrol_database_plugin extends enrol_plugin {
                     if (empty($currentroles[$userid][$roleid])) {
                         role_assign($roleid, $userid, $context->id, 'enrol_database', $instance->id);
                         $currentroles[$userid][$roleid] = $roleid;
-                        $trace->output("assigning roles: $userid ==> $course->shortname as ".$allroles[$roleid]->shortname, 1);
+                        if ($trace_concise) {
+                            $trace->output("assigning roles: $userid ==> $course->shortname as ".$allroles[$roleid]->shortname, 1);
+                        }
                     }
                 }
 
@@ -621,7 +646,9 @@ class enrol_database_plugin extends enrol_plugin {
                     if (empty($userroles[$cr])) {
                         role_unassign($cr, $userid, $context->id, 'enrol_database', $instance->id);
                         unset($currentroles[$userid][$cr]);
-                        $trace->output("unassigning roles: $userid ==> $course->shortname", 1);
+                        if ($trace_concise) {
+                            $trace->output("unsassigning roles: $userid ==> $course->shortname", 1);
+                        }
                     }
                 }
 
@@ -643,7 +670,9 @@ class enrol_database_plugin extends enrol_plugin {
                             continue;
                         }
                         $this->unenrol_user($instance, $userid);
-                        $trace->output("unenrolling: $userid ==> $course->shortname", 1);
+                        if ($trace_concise) {
+                            $trace->output("unenrolling: $userid ==> $course->shortname", 1);
+                        }
                     }
                 }
 
@@ -658,7 +687,9 @@ class enrol_database_plugin extends enrol_plugin {
                     }
                     if ($status != ENROL_USER_SUSPENDED) {
                         $this->update_user_enrol($instance, $userid, ENROL_USER_SUSPENDED);
-                        $trace->output("suspending: $userid ==> $course->shortname", 1);
+                        if ($trace_concise) {
+                            $trace->output("suspending: $userid ==> $course->shortname", 1);
+                        }
                     }
                     if ($unenrolaction == ENROL_EXT_REMOVED_SUSPENDNOROLES) {
                         if (isset($requestedroles[$userid])) {
@@ -667,7 +698,9 @@ class enrol_database_plugin extends enrol_plugin {
                         }
                         role_unassign_all(array('contextid'=>$context->id, 'userid'=>$userid, 'component'=>'enrol_database', 'itemid'=>$instance->id));
 
-                        $trace->output("unsassigning all roles: $userid ==> $course->shortname", 1);
+                        if ($trace_concise) {
+                            $trace->output("unsassigning all roles: $userid ==> $course->shortname", 1);
+                        }
                     }
                 }
             }
