@@ -56,6 +56,7 @@ lib/editor/atto/plugins/fontsize/
 lib/editor/atto/plugins/fullscreen/
 lib/editor/atto/plugins/hr/
 lib/editor/atto/plugins/imagedragdrop/
+lib/editor/atto/plugins/hideabox
 lib/editor/tinymce/plugins/hideabox
 
 local/codechecker
