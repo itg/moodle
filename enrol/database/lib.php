@@ -647,7 +647,7 @@ class enrol_database_plugin extends enrol_plugin {
                         role_unassign($cr, $userid, $context->id, 'enrol_database', $instance->id);
                         unset($currentroles[$userid][$cr]);
                         if ($trace_concise) {
-                            $trace->output("unsassigning roles: $userid ==> $course->shortname", 1);
+                            $trace->output("unassigning roles: $userid ==> $course->shortname", 1);
                         }
                     }
                 }
