@@ -63,6 +63,7 @@ local/codechecker
 local/loginas
 
 mod/attendance
+mod/book/tool/importepub
 
 report/editdates
 
