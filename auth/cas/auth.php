@@ -120,7 +120,9 @@ class auth_plugin_cas extends auth_plugin_ldap {
             }
 
             $authCAS = optional_param('authCAS', '', PARAM_RAW);
-            if ($authCAS == 'NOCAS') {
+            // If the URL explicity asks for a manual login or the user has a cookie set
+            // send the user to the manual login form
+            if (($authCAS == 'NOCAS') || ('' != get_moodle_cookie())) {
                 return;
             }
             else {
