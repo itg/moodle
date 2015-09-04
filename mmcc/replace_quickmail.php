@@ -42,6 +42,8 @@ $force_replace_cats = array (
     7,         //Master courses
 );
 
+echo "Started at ". date('Y-m-d h:i:s a', time());
+
 $course_count = $DB->count_records('course');
 $current_count = 0;
 $error_count = 0;
@@ -100,3 +102,4 @@ foreach($courses_rs as $course) {
 $courses_rs->close();
 
 echo "\nDone checking {$course_count} courses ({$change_count} Modifications; {$error_count} Error(s))\n";
+echo "Ended at ". date('Y-m-d h:i:s a', time()) . "\n";
