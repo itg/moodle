@@ -158,7 +158,10 @@ class mod_forum_maildigest_testcase extends advanced_testcase {
         } else {
             $this->expectOutputRegex("/Email digests successfully sent to {$expected} users/");
         }
+        // Send non-digest emails.
         forum_cron();
+        // Send digest emails.
+        forum_mail_digests_task();
 
         // Now check the results in the message sink.
         $messages = $this->helper->messagesink->get_messages();

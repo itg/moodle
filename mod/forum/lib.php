@@ -440,12 +440,12 @@ function forum_cron_minimise_user_record(stdClass $user) {
  * Function to be run periodically according to the scheduled task.
  *
  * Finds all posts that have yet to be mailed out, and mails them
- * out to all subscribers as well as other maintance tasks.
+ * out to all subscribers.
  *
  * NOTE: Since 2.7.2 this function is run by scheduled task rather
  * than standard cron.
  *
- * @todo MDL-44734 The function will be split up into seperate tasks.
+ * NOTE: Since 3.1 this task is no longer one monolithic function
  */
 function forum_cron() {
     global $CFG, $USER, $DB, $PAGE;
@@ -455,10 +455,6 @@ function forum_cron() {
     // The main renderers.
     $htmlout = $PAGE->get_renderer('mod_forum', 'email', 'htmlemail');
     $textout = $PAGE->get_renderer('mod_forum', 'email', 'textemail');
-    $htmldigestfullout = $PAGE->get_renderer('mod_forum', 'emaildigestfull', 'htmlemail');
-    $textdigestfullout = $PAGE->get_renderer('mod_forum', 'emaildigestfull', 'textemail');
-    $htmldigestbasicout = $PAGE->get_renderer('mod_forum', 'emaildigestbasic', 'htmlemail');
-    $textdigestbasicout = $PAGE->get_renderer('mod_forum', 'emaildigestbasic', 'textemail');
 
     // All users that are subscribed to any post that needs sending,
     // please increase $CFG->extramemorylimit on large sites that
@@ -875,15 +871,47 @@ function forum_cron() {
             }
         }
     }
+}
 
-    // release some memory
-    unset($subscribedusers);
-    unset($mailcount);
-    unset($errorcount);
+/**
+ * Function to be run periodically according to the scheduled task.
+ *
+ * Finds all posts that should be mailed as digests and mails them
+ * out to all subscribers.
+ *
+ * NOTE: Since 3.1 this task is no longer a part of one monolithic function
+ */
+function forum_mail_digests_task() {
+    global $CFG, $USER, $DB, $PAGE;
+
+    $site = get_site();
 
     cron_setup_user();
 
+    $htmldigestfullout = $PAGE->get_renderer('mod_forum', 'emaildigestfull', 'htmlemail');
+    $textdigestfullout = $PAGE->get_renderer('mod_forum', 'emaildigestfull', 'textemail');
+    $htmldigestbasicout = $PAGE->get_renderer('mod_forum', 'emaildigestbasic', 'htmlemail');
+    $textdigestbasicout = $PAGE->get_renderer('mod_forum', 'emaildigestbasic', 'textemail');
+
+    // All users that are subscribed to any post that needs sending,
+    // please increase $CFG->extramemorylimit on large sites that
+    // send notifications to a large number of users.
+    $users = array();
+    $userscount = 0; // Cached user counter - count($users) in PHP is horribly slow!!!
+
+    $timenow   = time();
     $sitetimezone = core_date::get_server_timezone();
+
+    // Get the list of forum subscriptions for per-user per-forum maildigest settings.
+    $digestsset = $DB->get_recordset('forum_digests', null, '', 'id, userid, forum, maildigest');
+    $digests = array();
+    foreach ($digestsset as $thisrow) {
+        if (!isset($digests[$thisrow->forum])) {
+            $digests[$thisrow->forum] = array();
+        }
+        $digests[$thisrow->forum][$thisrow->userid] = $thisrow->maildigest;
+    }
+    $digestsset->close();
 
     // Now see if there are any digest mails waiting to be sent, and if we should send them
 
@@ -1185,7 +1213,17 @@ function forum_cron() {
     if (!empty($usermailcount)) {
         mtrace(get_string('digestsentusers', 'forum', $usermailcount));
     }
+}
 
+/**
+ * Function to be run periodically according to the scheduled task.
+ *
+ * Performs these forum maintenance jobs:
+ *   - Cleans old posts from the 'read' table.
+ *
+ * NOTE: Since 3.1 this task is no longer a part of one monolithic function
+ */
+function forum_mark_posts_read_task() {
     if (!empty($CFG->forum_lastreadclean)) {
         $timenow = time();
         if ($CFG->forum_lastreadclean + (24*3600) < $timenow) {

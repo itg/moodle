@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A scheduled task for forum cron.
+ * A scheduled task for forum maintenance jobs.
  *
  * @package    mod_forum
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
@@ -23,7 +23,7 @@
  */
 namespace mod_forum\task;
 
-class cron_task extends \core\task\scheduled_task {
+class postread_task extends \core\task\scheduled_task {
 
     /**
      * Get a descriptive name for this task (shown to admins).
@@ -31,7 +31,7 @@ class cron_task extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('crontask', 'mod_forum');
+        return get_string('postreadtask', 'mod_forum');
     }
 
     /**
@@ -40,7 +40,7 @@ class cron_task extends \core\task\scheduled_task {
     public function execute() {
         global $CFG;
         require_once($CFG->dirroot . '/mod/forum/lib.php');
-        forum_cron();
+        forum_mark_posts_read_task();
     }
 
 }

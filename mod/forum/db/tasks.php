@@ -34,5 +34,24 @@ $tasks = array(
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*'
+    ),
+    array(
+        'classname' => 'mod_forum\task\digest_task',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '17',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
+    ),
+    array(
+        'classname' => 'mod_forum\task\postread_task',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '2',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
     )
+
 );
