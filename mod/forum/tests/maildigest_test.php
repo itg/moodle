@@ -64,10 +64,6 @@ class mod_forum_maildigest_testcase extends advanced_testcase {
         // Tell Moodle that we've not sent any digest messages out recently.
         $CFG->digestmailtimelast = 0;
 
-        // And set the digest sending time to a negative number - this has
-        // the effect of making it 11pm the previous day.
-        $CFG->digestmailtime = -1;
-
         // Forcibly reduce the maxeditingtime to a one second to ensure that
         // messages are sent out.
         $CFG->maxeditingtime = 1;
@@ -140,7 +136,7 @@ class mod_forum_maildigest_testcase extends advanced_testcase {
         // the start of an hour where the modification time on the message is before
         // the start of that hour
         $sitetimezone = core_date::get_server_timezone();
-        $digesttime = usergetmidnight(time(), $sitetimezone) + ($CFG->digestmailtime * 3600) - (60 * 60);
+        $digesttime = usergetmidnight(time(), $sitetimezone) - (60 * 60);
         $DB->set_field('forum_posts', 'modified', $digesttime, array('mailed' => 0));
         $DB->set_field('forum_posts', 'created', $digesttime, array('mailed' => 0));
     }
@@ -158,7 +154,10 @@ class mod_forum_maildigest_testcase extends advanced_testcase {
         } else {
             $this->expectOutputRegex("/Email digests successfully sent to {$expected} users/");
         }
+        // Send non-digest emails.
         forum_cron();
+        // Send digest emails.
+        forum_mail_digests_task();
 
         // Now check the results in the message sink.
         $messages = $this->helper->messagesink->get_messages();
