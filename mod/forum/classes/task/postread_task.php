@@ -23,6 +23,15 @@
  */
 namespace mod_forum\task;
 
+/**
+ * A scheduled task for forum maintenance jobs.
+ *
+ * Performs these forum maintenance jobs:
+ *   - Cleans old posts from the 'read' table.
+ *
+ * @copyright  2015 Matt Rice <mrice1@midmich.edu>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class postread_task extends \core\task\scheduled_task {
 
     /**
