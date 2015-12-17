@@ -23,6 +23,12 @@
  */
 namespace mod_forum\task;
 
+/**
+ * Finds all posts that should be mailed as digests and mails them out to all subscribers.
+ *
+ * @copyright  2015 Matt Rice <mrice1@midmich.edu>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class digest_task extends \core\task\scheduled_task {
 
     /**
