@@ -11,6 +11,8 @@ define("COOKIE_NAME", 'MAPPSERVER');
 define("COOKIE_VALUE_MAPP1", 'mapp1');
 define("COOKIE_VALUE_MAPP2", 'mapp2');
 define("COOKIE_VALUE_MAPP3", 'mapp3');
+// This is to skip a load balencer redirect to the moodle pilot
+define("OVERRIDE_COOKIE_NAME", 'mmcc_no_moodle_override');
 
 // Tries to set a cookie
 //      -valid for everywhere on this domain
@@ -37,10 +39,12 @@ if ($cookie_exists) {
     $cookie_value = $_COOKIE[COOKIE_NAME];
 }
 
+$override_cookie_exists = isset($_COOKIE[OVERRIDE_COOKIE_NAME]) && '1' == $_COOKIE[OVERRIDE_COOKIE_NAME];
+
 // Does the user want to set the cookie (e.g. ?set_cookie=1&cookie_value=mapp3)
-$do_set_cookie = isset($_GET['set_cookie']) && $_GET['set_cookie'] && isset($_GET['cookie_value']);
+$do_set_cookie = ( isset($_GET['set_cookie']) && $_GET['set_cookie'] && isset($_GET['cookie_value']) ) || ( isset($_GET['override_cookie']) && $_GET['override_cookie'] );
 $cookie_new_value = '';
-if ($do_set_cookie) {
+if ($do_set_cookie && isset($_GET['set_cookie'])) {
     $cookie_new_value = $_GET['cookie_value'];
 
     // Validate new cookie value
@@ -61,6 +65,11 @@ if ($do_set_cookie) {
             break;
     }
 }
+if ($do_set_cookie && isset($_GET['override_cookie'])){
+    $expiry = time()+60*60*24*30;
+    $result = set_domain_cookie(OVERRIDE_COOKIE_NAME, '1', $expiry);
+    $output = "<p>Setting cookie " . OVERRIDE_COOKIE_NAME . "= 1 ...</p>";
+}
 
 // Does the user want to clear the cookie? (e.g. ?clear_cookie=1)
 $do_clear_cookie = isset($_GET['clear_cookie']) && $_GET['clear_cookie'];
@@ -68,7 +77,8 @@ if ($do_clear_cookie) {
     // Expire existing cookie - i.e. set to expire in the past
     $expiry = 1;
     $result = set_domain_cookie(COOKIE_NAME, '', $expiry);
-    $output = "<p>Removing cookie " . COOKIE_NAME . "...</p>";
+    $override_result = set_domain_cookie(OVERRIDE_COOKIE_NAME, '', $expiry);
+    $output = "<p>Removing cookie " . COOKIE_NAME . " and " . OVERRIDE_COOKIE_NAME . "...</p>";
 }
 
 header("HTTP/1.0 $status $message");
@@ -76,9 +86,8 @@ echo '<html><body>';
 
 if ($do_set_cookie || $do_clear_cookie) {
     echo $output;
-    echo "<p>Cookie set request " . ($result ? "sent successfully" : "failed") . "</p>";
+    echo "<p>Cookie set request " . ($result || $override_result ? "sent successfully" : "failed") . "</p>";
     echo '<p><a href="manage_lb_cookie.php">Return</a><p>';
-
 }
 else {
     if ($cookie_exists) {
@@ -94,7 +103,7 @@ else {
     echo '<a href="manage_lb_cookie.php?set_cookie=1&cookie_value=' . COOKIE_VALUE_MAPP3 . '">mapp3</a>';
     echo '</p>';
 
-    echo '<p><a href="manage_lb_cookie.php?clear_cookie=1">Clear cookie</a></p>';
+    echo '<p><a href="manage_lb_cookie.php?clear_cookie=1">Clear cookies</a></p>';
 }
 
 echo '</body></html>';
