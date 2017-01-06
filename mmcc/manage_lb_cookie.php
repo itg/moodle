@@ -96,11 +96,20 @@ else {
     else {
         echo '<p>Cookie \'' . COOKIE_NAME . '\' not currently set.</p>';
     }
-
     echo '<p>Set cookie to:<br />';
     echo '<a href="manage_lb_cookie.php?set_cookie=1&cookie_value=' . COOKIE_VALUE_MAPP1 . '">mapp1</a> | ';
     echo '<a href="manage_lb_cookie.php?set_cookie=1&cookie_value=' . COOKIE_VALUE_MAPP2 . '">mapp2</a> | ';
     echo '<a href="manage_lb_cookie.php?set_cookie=1&cookie_value=' . COOKIE_VALUE_MAPP3 . '">mapp3</a>';
+    echo '</p>';
+
+    if ($override_cookie_exists) {
+        echo '<p>Cookie \'' . OVERRIDE_COOKIE_NAME . '\' currently exists with value=1</p>';
+    }
+    else {
+        echo '<p>Cookie \'' . OVERRIDE_COOKIE_NAME . '\' not currently set.</p>';
+    }
+    echo '<p>Set redirect override cookie:<br />';
+    echo '<a href="manage_lb_cookie.php?override_cookie=1">disable override redirects</a>';
     echo '</p>';
 
     echo '<p><a href="manage_lb_cookie.php?clear_cookie=1">Clear cookies</a></p>';
