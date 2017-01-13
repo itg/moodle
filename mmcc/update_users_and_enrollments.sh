@@ -3,7 +3,7 @@
 echo `date` '- updating users'
 
 # Update users
-/usr/bin/php smart_user_sync.php
+/usr/bin/php smart_user_sync.php -v
 
 echo `date` '- users updated; updating enrollments'
 
