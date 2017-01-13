@@ -2,7 +2,7 @@
 
 require("constants.php");
 
-function find_or_create_user( $user=[], $dry_run=true, $insert_stmt, $update_stmt, $select_stmt, &$fields ) {
+function insert_or_update_user( $user=[], $dry_run=true, $insert_stmt, $update_stmt, $select_stmt, &$fields ) {
     $update_fields = ["username", "firstname", "lastname", "email"];
     $insert_fields = array_merge($update_fields, ["idnumber", "auth", "password", "maildigest", "trackforums", "lang"]);
 
@@ -134,7 +134,7 @@ $unmodified_count = 0;
 foreach($users as $user) {
     $count++;
 
-    $inserted = find_or_create_user( $user, $dry_run, $insert_stmt, $update_stmt, $select_stmt, $fields_updated);
+    $inserted = insert_or_update_user( $user, $dry_run, $insert_stmt, $update_stmt, $select_stmt, $fields_updated);
 
     if (-1 == $inserted) {
         $unmodified_count++;
