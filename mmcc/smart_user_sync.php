@@ -13,7 +13,7 @@ function find_or_create_user( $user=[], $dry_run=true, $insert_stmt, $update_stm
     if ($row = $select_stmt->fetch()) {
         // compare fields, update only if necessary
         foreach($update_fields as $field) {
-            if (strtolower($user[$field]) != strtolower($row[$field])) {
+            if ($user[$field] != $row[$field]) {
                 $fields[$field] = $row[$field] . ' --> ' . $user[$field];
             }
         }
