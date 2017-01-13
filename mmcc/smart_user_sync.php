@@ -2,6 +2,47 @@
 
 require("constants.php");
 
+define('LOG_LEVEL_NONE', 0);
+define('LOG_LEVEL_INFO', 1);
+define('LOG_LEVEL_DEBUG', 2);
+
+function get_commandline_arguments( $cli_args, &$dry_run, &$verbosity) {
+    $dry_run = false;
+    $verbosity = LOG_LEVEL_NONE;
+
+    if ($cli_args) {
+        // $argv[0] is the name of the calling script
+        // http://php.net/manual/en/reserved.variables.argv.php
+        array_shift($cli_args);
+
+        foreach($cli_args as $arg) {
+            switch ($arg) {
+            case "-d":
+            case "--dry-run":
+                $dry_run = true;
+                break;
+            case "-v":
+            case "--verbose":
+                if (LOG_LEVEL_INFO >= $verbosity) {
+                    $verbosity = LOG_LEVEL_INFO;
+                }
+                break;
+            case "-vv":
+            case "--vverbose":
+                $verbosity = LOG_LEVEL_DEBUG;
+                break;
+
+            case "--":
+                // ignore empty arg
+                // may be present iff invoked via php -f /path/to/file -- --arg0 --arg1 ... --argN
+                break;
+            default:
+                die("Unknown argument: '$arg' - exiting.\n");
+            }
+        }
+    }
+}
+
 function insert_or_update_user( $user=[], $dry_run=true, $insert_stmt, $update_stmt, $select_stmt, &$fields ) {
     $update_fields = ["username", "firstname", "lastname", "email"];
     $insert_fields = array_merge($update_fields, ["idnumber", "auth", "password", "maildigest", "trackforums", "lang"]);
@@ -107,15 +148,23 @@ function extract_user( $row=NULL) {
 }
 
 // Get commandline options
-$dry_run = false;
+$dry_run = true;
+$verbosity = LOG_LEVEL_NONE;
+
+get_commandline_arguments( $argv, $dry_run, $verbosity);
 if ($dry_run) {
     echo "--dry_run given; simulating actions only!\n";
 }
 
 $smart_handle = new PDO("mysql:host=" . SMART_DB_SERVER . ";dbname=" . SMART_DB_NAME, SMART_DB_USERNAME, SMART_DB_PASSWORD);
-echo "connected to database `" . SMART_DB_NAME . "` on '" . SMART_DB_SERVER . "'\n";
+if (LOG_LEVEL_DEBUG == $verbosity) {
+    echo "connected to database `" . SMART_DB_NAME . "` on '" . SMART_DB_SERVER . "'\n";
+}
+
 $moodle_handle = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME, DB_USERNAME, DB_PASSWORD);
-echo "connected to database `" . DB_NAME . "` on '" . DB_SERVER . "'\n";
+if (LOG_LEVEL_DEBUG == $verbosity) {
+    echo "connected to database `" . DB_NAME . "` on '" . DB_SERVER . "'\n";
+}
 $users = get_users_from_smart($smart_handle);
 
 
@@ -138,18 +187,29 @@ foreach($users as $user) {
 
     if (-1 == $inserted) {
         $unmodified_count++;
-        echo "[$count] user[" . $user["idnumber"] . "]: Up to date\n";
+
+        if (LOG_LEVEL_DEBUG <= $verbosity) {
+            echo "[$count] user[" . $user["idnumber"] . "]: Up to date\n";
+        }
         continue;
     }
     else if (1 == $inserted) {
         $inserted_count++;
-        echo "[$count] user[" . $user["idnumber"] . "]: Inserted new record: ";
+        if (LOG_LEVEL_INFO <= $verbosity) {
+            echo "[$count] user[" . $user["idnumber"] . "]: Inserted new record: ";
+        }
     }
     else if(0 == $inserted) {
         $updated_count++;
-        echo "[$count] user[" . $user["idnumber"] . "]: Updated existing record: ";
+        if (LOG_LEVEL_INFO <= $verbosity) {
+            echo "[$count] user[" . $user["idnumber"] . "]: Updated existing record: ";
+        }
     }
-    echo print_r($fields_updated, true) . "\n";
+
+    if (LOG_LEVEL_INFO <= $verbosity) {
+        echo print_r($fields_updated, true);
+    }
+    echo "\n";
 }
 
 echo "\n----------\n";
