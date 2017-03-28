@@ -33,6 +33,10 @@ global $DB;
 // These four blocks aren't enough!
 $blocks_indicating_reset_needed =  array('calendar_upcoming', 'news_items', 'recent_activity', 'search_forums');
 sort($blocks_indicating_reset_needed);
+// These blocks aren't enough!
+// This should match /var/moodle/config.php::$CFG->defaultblocks_override
+$default_block_set =  array('clampmail', 'participants', 'activity_modules', 'search_forums', 'filtered_course_list', 'news_items', 'quickset', 'calendar_upcoming', 'recent_activity');
+sort($default_block_set);
 
 //$conditions = array('category'=>'109'); //2015wi
 
@@ -48,6 +52,7 @@ $change_count = 0;
 $course_count = 0;
 $error_count  = 0;
 $courses_with_only_four_blocks = 0;
+$courses_with_default_blocks = 0;
 $courses_without_quickset = 0;
 $courses_with_zero_blocks = 0;
 
@@ -93,18 +98,30 @@ foreach($courses_rs as $course) {
         sort($course_blocknames);
         //echo "The course had these blocks:\n";
         //print_r($course_blocknames);
-        if ($course_blocknames == $blocks_indicating_reset_needed) {
-            //echo "This course appears to have incomplete set of blocks. Please reset this course.\n";
-            echo "{$course->fullname} only has the four blocks; reseting blocks...";
-            $courses_with_only_four_blocks++;
+        $block_reset_needed = false;
+        switch ($course_blocknames) {
+            case $blocks_indicating_reset_needed:
+                //echo "This course appears to have incomplete set of blocks. Please reset this course.\n";
+                echo "{$course->fullname} only has the four blocks; reseting blocks...";
+                $courses_with_only_four_blocks++;
 
+                $block_reset_needed = true;
+                break;
+            case $default_block_set:
+                echo "{$course->fullname} has the default blocks; reseting blocks...";
+                $courses_with_default_blocks++;
+
+                $block_reset_needed = true;
+                break;
+        }
+
+        if ($block_reset_needed) {
             $course_context = context_course::instance($course->id);
             blocks_delete_all_for_context($course_context->id);
             blocks_add_default_course_blocks($course);
             $change_count++;
 
             echo "done\n";
-
         }
 
         // Was quickset missing? Count it!
@@ -112,7 +129,7 @@ foreach($courses_rs as $course) {
             $courses_without_quickset++;
 
             // Don't accidentally add the block a second time, brandon!
-            if ($course_blocknames != $blocks_indicating_reset_needed) {
+            if (!$block_reset_needed) {
                 echo "Trying to add just the quickset block...";
                 $pagetypepattern = 'course-view-*';
                 $page = new moodle_page();
@@ -127,7 +144,7 @@ foreach($courses_rs as $course) {
         }
 
 
-        if ($num_blocks) {
+        if (0 < $num_blocks) {
             // echo "Course has blocks - leaving this course alone\n";
         } else {
             $courses_with_zero_blocks++;
@@ -154,6 +171,7 @@ if($courses_rs) {
 
 echo "Courses that had zero blocks: {$courses_with_zero_blocks}\n";
 echo "Courses that had just the four blocks: {$courses_with_only_four_blocks}\n";
+echo "Courses that had the default blocks: {$courses_with_default_blocks}\n";
 echo "Courses that had no quickset: {$courses_without_quickset}\n";
 echo "<h2>Done checking {$course_count} courses ({$change_count} Modifications; {$error_count} Error(s))</h2>\n";
 echo "Ended at ". date('Y-m-d h:i:s a', time());
