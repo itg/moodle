@@ -8,7 +8,13 @@ define('LOG_LEVEL_DEBUG', 2);
 
 // Borrowed from Moodle
 // https://github.com/itg/moodle/blob/MMCC_28/lib/accesslib.php#L141
+/** System context level - only one instance in every system */
+define('CONTEXT_LEVEL_SYSTEM', 10);
+
+/** Course category context level - one instance for each category */
 define('CONTEXT_LEVEL_CATEGORY', 40);
+
+/** Course context level - one instance for each course */
 define('CONTEXT_LEVEL_COURSE', 50);
 
 function get_commandline_arguments( $cli_args, &$dry_run, &$verbosity) {
@@ -219,8 +225,20 @@ function find_or_create_course_category( $moodle_handle=NULL, $category_name="",
                 ":depth" => 1,
             ));
 
-            // Pass "/1" for parentpath so this category gets created at the top level (e.g. under the root category)
-            $category_context = create_context( $moodle_handle, CONTEXT_LEVEL_CATEGORY, $category->id, "/1");
+            // Find the system context level to find the correct path
+            $system_context_path = "/1";
+
+            $stmt = $moodle_handle->prepare("SELECT path FROM mdl_context WHERE 1 = depth AND :context_level = contextlevel");
+            $stmt->execute(array(
+                ":context_level" => CONTEXT_LEVEL_SYSTEM,
+            ));
+            if ($row = $stmt->fetch()) {
+                $system_context_path = $row["path"];
+            }
+            $stmt = NULL;
+
+            // Create this category at the top level (e.g. directly under the system context)
+            $category_context = create_context( $moodle_handle, CONTEXT_LEVEL_CATEGORY, $category->id, $system_context_path);
             $category->context_path = $category_context->path;
 
             if (LOG_LEVEL_INFO <= $verbosity) {
