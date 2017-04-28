@@ -45,7 +45,7 @@ function get_commandline_arguments( $cli_args, &$dry_run, &$verbosity) {
 
 function insert_or_update_user( $user=[], $dry_run=true, $insert_stmt, $update_stmt, $select_stmt, &$fields ) {
     $update_fields = ["username", "firstname", "lastname", "email"];
-    $insert_fields = array_merge($update_fields, ["idnumber", "auth", "password", "maildigest", "trackforums", "lang"]);
+    $insert_fields = array_merge($update_fields, ["idnumber", "auth", "password", "maildigest", "trackforums", "lang", "mnethostid", "confirmed"]);
 
     $fields = array();
     // find user
@@ -76,6 +76,8 @@ function insert_or_update_user( $user=[], $dry_run=true, $insert_stmt, $update_s
         $user["maildigest"] = "1";
         $user["trackforums"] = "1";
         $user["lang"] = "en_us";
+        $user["mnethostid"] = 3;        // value can be found in mdl_mnet_host table; we could probably find it by querying based on $CFG->wwwroot but hard-code it for now
+        $user["confirmed"] = 1;
 
         // insert (mark all fields as updated)
         foreach($insert_fields as $field) {
@@ -168,7 +170,7 @@ if (LOG_LEVEL_DEBUG == $verbosity) {
 $users = get_users_from_smart($smart_handle);
 
 
-$insert_sql = "INSERT INTO mdl_user (username, firstname, lastname, email, idnumber, auth, password, maildigest, trackforums, lang) VALUES (:username, :firstname, :lastname, :email, :idnumber, :auth, :password, :maildigest, :trackforums, :lang)";
+$insert_sql = "INSERT INTO mdl_user (username, firstname, lastname, email, idnumber, auth, password, maildigest, trackforums, lang, mnethostid, confirmed) VALUES (:username, :firstname, :lastname, :email, :idnumber, :auth, :password, :maildigest, :trackforums, :lang, :mnethostid, :confirmed)";
 $update_sql = "UPDATE mdl_user SET username = :username, firstname = :firstname, lastname = :lastname, email = :email WHERE idnumber = :idnumber";
 $select_sql = "SELECT idnumber, username, firstname, lastname, email FROM mdl_user WHERE idnumber = :idnumber";
 
