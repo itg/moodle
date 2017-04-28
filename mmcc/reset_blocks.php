@@ -61,8 +61,6 @@ foreach($courses_rs as $course) {
     try{
 
         $blocknames = course_get_format($course)->get_default_blocks();
-        echo "Default block names:\n";
-        print_r($blocknames);
 
         $context = context_course::instance($course->id);
 
