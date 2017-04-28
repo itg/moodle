@@ -8,4 +8,8 @@ echo `date` '- courses updated; creating overrides'
 
 /usr/bin/php create_moodle_shell_overrides.php --verbose
 
-echo `date` '- override creation finished'
+echo `date` '- override creation finished; resetting blocks'
+
+/usr/bin/php reset_blocks.php
+
+echo `date` '- blocks reset'
