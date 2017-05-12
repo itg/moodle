@@ -272,7 +272,7 @@ INNER JOIN terms t ON cs.term = t.`name`
 INNER JOIN moodle_shells ms ON ms.idnumber = cs.synonym
 
 WHERE (0 < COALESCE(ms.pilot_mdl_course_id, 0) AND '' <> ms.idnumber)
-OR category_name LIKE '2017SP'
+OR category_name IN ('2017SP', '2017MT', '2018MT')
 EOD;
 
     # Fetch instructors

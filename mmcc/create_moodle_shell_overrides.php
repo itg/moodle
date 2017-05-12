@@ -126,7 +126,7 @@ $courses = [];
 
 // Get synonyms from (cluster.smart)
 // foreach synonym
-$sql = "SELECT * FROM course_sections WHERE current_status IN ('A', 'P', 'S') AND term IN ('2017SP')";
+$sql = "SELECT * FROM course_sections WHERE current_status IN ('A', 'P', 'S') AND term IN ('2017SP', '2017MT', '2018MT')";
 $stmt = $cluster_handle->prepare($sql);
 $stmt->execute();
 while($row = $stmt->fetch()) {
