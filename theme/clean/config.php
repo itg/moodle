@@ -46,3 +46,20 @@ $THEME->editor_sheets = array();
 
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
 $THEME->csspostprocess = 'theme_clean_process_css';
+
+// adpated from theme/bootstrapbase/config.php:51-62
+$THEME->layouts = array(
+    // Standard layout with blocks, this is recommended for most pages with general information.
+    'standard' => array(
+        'file' => 'columns3.php',
+        'regions' => array('side-pre', 'side-post'),
+        'defaultregion' => 'side-post',
+    ),
+    // Main course page.
+    'course' => array(
+        'file' => 'columns3.php',
+        'regions' => array('side-pre', 'side-post'),
+        'defaultregion' => 'side-post',
+        'options' => array('langmenu' => true),
+    ),
+);
