@@ -251,10 +251,11 @@ function get_courses_from_smart( $handle=NULL ) {
 SELECT cs.id, cs.synonym AS idnumber, cs.`subject`, cs.course, cs.section, cs.term AS category_name, t.`description` AS category_description, cs.synonym, cs.title, cs.start_date, cs.end_date, cs.meeting_info, cs.description AS summary
 FROM course_sections cs
 INNER JOIN terms t ON cs.term = t.`name`
-INNER JOIN moodle_shells ms ON ms.idnumber = cs.synonym
 
-WHERE (0 < COALESCE(ms.pilot_mdl_course_id, 0) AND '' <> ms.idnumber)
-OR category_name IN ('2017SP', '2017MT', '2018MT')
+WHERE 'P' <> cs.current_status
+AND cs.synonym IS NOT NULL
+AND 30 >= DATEDIFF(t.start, NOW())
+AND -7 <= DATEDIFF(t.end, NOW())
 EOD;
 
     # Fetch instructors
