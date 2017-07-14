@@ -97,23 +97,25 @@ function get_users_from_smart( $handle=NULL ) {
     $users = array();
 
     $student_sql =<<<EOD
-    SELECT DISTINCT(u.id_string) AS idnumber, u.username, u.firstname, u.nickname, u.lastname, CONCAT(u.username, '@midmich.edu') AS email
-    FROM moodle_shells ms
-    INNER JOIN course_sections cs ON cs.synonym = ms.idnumber
-    INNER JOIN student_memberships sm ON sm.course_section_id = cs.id
-    INNER JOIN users u ON u.id = sm.user_id
+SELECT DISTINCT(u.id_string) AS idnumber, u.username, u.firstname, u.nickname, u.lastname, CONCAT(u.username, '@midmich.edu') AS email
+FROM users u
+INNER JOIN student_memberships sm ON u.id = sm.user_id
+INNER JOIN course_sections cs ON sm.course_section_id = cs.id
+INNER JOIN terms t ON t.`name` = cs.term
 
-    WHERE ms.pilot_mdl_course_id IS NOT NULL
+WHERE 30 >= DATEDIFF(t.start, NOW())
+AND -7 <= DATEDIFF(t.end, NOW())
 EOD;
 
     $instructor_sql =<<<EOD
-    SELECT DISTINCT(u.id_string) AS idnumber, u.username, u.firstname, u.nickname, u.lastname, CONCAT(u.username, '@midmich.edu') AS email
-    FROM moodle_shells ms
-    INNER JOIN course_sections cs ON cs.synonym = ms.idnumber
-    INNER JOIN instructor_memberships im ON im.course_section_id = cs.id
-    INNER JOIN users u ON u.id = im.user_id
+SELECT DISTINCT(u.id_string) AS idnumber, u.username, u.firstname, u.nickname, u.lastname, CONCAT(u.username, '@midmich.edu') AS email
+FROM users u
+INNER JOIN instructor_memberships im ON u.id = im.user_id
+INNER JOIN course_sections cs ON im.course_section_id = cs.id
+INNER JOIN terms t ON t.`name` = cs.term
 
-    WHERE ms.pilot_mdl_course_id IS NOT NULL
+WHERE 30 >= DATEDIFF(t.start, NOW())
+AND -7 <= DATEDIFF(t.end, NOW())
 EOD;
 
     # Fetch students

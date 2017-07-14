@@ -38,7 +38,7 @@ sort($blocks_indicating_reset_needed);
 $default_block_set =  array('clampmail', 'participants', 'activity_modules', 'search_forums', 'filtered_course_list', 'news_items', 'quickset', 'calendar_upcoming', 'recent_activity');
 sort($default_block_set);
 
-$conditions = array('category'=>'16'); //2018SP
+$conditions = array('category'=>'128'); //2017WI
 
 //$conditions = array('id'=>'15429');                    //Get courses by course id (e.g. from URL)
 

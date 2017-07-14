@@ -1,5 +1,9 @@
 <?php
 
+// This script updates smart.moodle_shell_overrides, which is the basis
+// for a set of HAProxy redirects that allow linking directly to a Moodle
+// course to transparently redirect to a Moodle 3 Pilot course, if necessary
+
 //NOT using constants.php here because we need to connect to so many
 //  different databases, and I did not want to clutter up that file
 
