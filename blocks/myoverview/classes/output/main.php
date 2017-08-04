@@ -29,6 +29,7 @@ use renderer_base;
 use templatable;
 use core_completion\progress;
 
+require_once($CFG->dirroot . '/mmcc/smart_utils.php');
 require_once($CFG->dirroot . '/blocks/myoverview/lib.php');
 require_once($CFG->libdir . '/completionlib.php');
 
@@ -63,7 +64,6 @@ class main implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
         global $USER;
 
-        require($CFG->dirroot.'/mmcc/smart_utils.php');
         $active_category_ids = smart_active_moodle_categories();
 
         $courses = enrol_get_my_courses('*', 'fullname ASC', 0, [], $active_category_ids);
