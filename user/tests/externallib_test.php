@@ -494,7 +494,14 @@ class core_user_externallib_testcase extends externallib_advanced_testcase {
             'email' => 'usertest1@example.com',
             'description' => 'This is a description for user 1',
             'city' => 'Perth',
-            'country' => 'AU'
+            'country' => 'AU',
+            'preferences' => [[
+                'type' => 'htmleditor',
+                'value' => 'atto'
+            ], [
+                'type' => 'invalidpreference',
+                'value' => 'abcd'
+            ]]
             );
 
         $context = context_system::instance();
@@ -519,6 +526,8 @@ class core_user_externallib_testcase extends externallib_advanced_testcase {
             $this->assertEquals($dbuser->description, $user1['description']);
             $this->assertEquals($dbuser->city, $user1['city']);
             $this->assertEquals($dbuser->country, $user1['country']);
+            $this->assertEquals('atto', get_user_preferences('htmleditor', null, $dbuser));
+            $this->assertEquals(null, get_user_preferences('invalidpreference', null, $dbuser));
         }
 
         // Call without required capability
@@ -582,14 +591,39 @@ class core_user_externallib_testcase extends externallib_advanced_testcase {
             'email' => 'usertest1@example.com',
             'description' => 'This is a description for user 1',
             'city' => 'Perth',
-            'country' => 'AU'
+            'country' => 'AU',
+            'preferences' => [[
+                'type' => 'htmleditor',
+                'value' => 'atto'
+            ], [
+                'type' => 'invalidpreference',
+                'value' => 'abcd'
+            ]]
             );
 
         $context = context_system::instance();
         $roleid = $this->assignUserCapability('moodle/user:update', $context->id);
 
+        // Check we can't update deleted users, guest users, site admin.
+        $user2 = $user3 = $user4 = $user1;
+        $user2['id'] = $CFG->siteguest;
+
+        $siteadmins = explode(',', $CFG->siteadmins);
+        $user3['id'] = array_shift($siteadmins);
+
+        $userdeleted = self::getDataGenerator()->create_user();
+        $user4['id'] = $userdeleted->id;
+        user_delete_user($userdeleted);
+
         // Call the external function.
-        core_user_external::update_users(array($user1));
+        core_user_external::update_users(array($user1, $user2, $user3, $user4));
+
+        $dbuser2 = $DB->get_record('user', array('id' => $user2['id']));
+        $this->assertNotEquals($dbuser2->username, $user2['username']);
+        $dbuser3 = $DB->get_record('user', array('id' => $user3['id']));
+        $this->assertNotEquals($dbuser3->username, $user3['username']);
+        $dbuser4 = $DB->get_record('user', array('id' => $user4['id']));
+        $this->assertNotEquals($dbuser4->username, $user4['username']);
 
         $dbuser = $DB->get_record('user', array('id' => $user1['id']));
         $this->assertEquals($dbuser->username, $user1['username']);
@@ -600,6 +634,8 @@ class core_user_externallib_testcase extends externallib_advanced_testcase {
         $this->assertEquals($dbuser->description, $user1['description']);
         $this->assertEquals($dbuser->city, $user1['city']);
         $this->assertEquals($dbuser->country, $user1['country']);
+        $this->assertEquals('atto', get_user_preferences('htmleditor', null, $dbuser));
+        $this->assertEquals(null, get_user_preferences('invalidpreference', null, $dbuser));
 
         // Call without required capability.
         $this->unassignUserCapability('moodle/user:update', $context->id, $roleid);

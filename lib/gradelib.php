@@ -1115,8 +1115,9 @@ function grade_recover_history_grades($userid, $courseid) {
  * @return bool true if ok, array of errors if problems found. Grade item id => error message
  */
 function grade_regrade_final_grades($courseid, $userid=null, $updated_item=null, $progress=null) {
-    // This may take a very long time.
+    // This may take a very long time and extra memory.
     \core_php_time_limit::raise();
+    raise_memory_limit(MEMORY_EXTRA);
 
     $course_item = grade_item::fetch_course_item($courseid);
 
@@ -1376,9 +1377,10 @@ function grade_update_mod_grades($modinstance, $userid=0) {
         //new grading supported, force updating of grades
         $updateitemfunc($modinstance);
         $updategradesfunc($modinstance, $userid);
-
-    } else {
+    } else if (function_exists($updategradesfunc) xor function_exists($updateitemfunc)) {
         // Module does not support grading?
+        debugging("You have declared one of $updateitemfunc and $updategradesfunc but not both. " .
+                  "This will cause broken behaviour.", DEBUG_DEVELOPER);
     }
 
     return true;

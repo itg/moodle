@@ -139,6 +139,9 @@ abstract class moodleform {
     /** @var object definition_after_data executed flag */
     protected $_definition_finalized = false;
 
+    /** @var bool|null stores the validation result of this form or null if not yet validated */
+    protected $_validated = null;
+
     /**
      * The constructor function calls the abstract function definition() and it will then
      * process and clean and attempt to validate incoming data.
@@ -539,11 +542,10 @@ abstract class moodleform {
      * @return bool true if form data valid
      */
     function validate_defined_fields($validateonnosubmit=false) {
-        static $validated = null; // one validation is enough
         $mform =& $this->_form;
         if ($this->no_submit_button_pressed() && empty($validateonnosubmit)){
             return false;
-        } elseif ($validated === null) {
+        } elseif ($this->_validated === null) {
             $internal_val = $mform->validate();
 
             $files = array();
@@ -581,9 +583,9 @@ abstract class moodleform {
                 $moodle_val = true;
             }
 
-            $validated = ($internal_val and $moodle_val and $file_val);
+            $this->_validated = ($internal_val and $moodle_val and $file_val);
         }
-        return $validated;
+        return $this->_validated;
     }
 
     /**
@@ -1360,6 +1362,7 @@ abstract class moodleform {
         $_FILES = $simulatedsubmittedfiles;
         if ($formidentifier === null) {
             $formidentifier = get_called_class();
+            $formidentifier = str_replace('\\', '_', $formidentifier); // See MDL-56233 for more information.
         }
         $simulatedsubmitteddata['_qf__'.$formidentifier] = 1;
         $simulatedsubmitteddata['sesskey'] = sesskey();
@@ -2149,12 +2152,14 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
                     }
                     //for editor element, [text] is appended to the name.
                     $fullelementname = $elementName;
-                    if ($element->getType() == 'editor') {
-                        $fullelementname .= '[text]';
-                        //Add format to rule as moodleform check which format is supported by browser
-                        //it is not set anywhere... So small hack to make sure we pass it down to quickform
-                        if (is_null($rule['format'])) {
-                            $rule['format'] = $element->getFormat();
+                    if (is_object($element) && $element->getType() == 'editor') {
+                        if ($element->getType() == 'editor') {
+                            $fullelementname .= '[text]';
+                            // Add format to rule as moodleform check which format is supported by browser
+                            // it is not set anywhere... So small hack to make sure we pass it down to quickform.
+                            if (is_null($rule['format'])) {
+                                $rule['format'] = $element->getFormat();
+                            }
                         }
                     }
                     // Fix for bug displaying errors for elements in a group
@@ -2243,7 +2248,12 @@ var skipClientValidation = false;
                 $elementName);
             $valFunc = 'validate_' . $this->_formName . '_' . $escapedElementName . '(ev.target, \''.$escapedElementName.'\')';
 
-            $js .= '
+            if (!is_array($element)) {
+                $element = [$element];
+            }
+            foreach ($element as $elem) {
+                if (key_exists('id', $elem->_attributes)) {
+                    $js .= '
     function validate_' . $this->_formName . '_' . $escapedElementName . '(element, escapedName) {
       if (undefined == element) {
          //required element was not found, then let form be submitted without client side validation
@@ -2266,13 +2276,15 @@ var skipClientValidation = false;
       }
     }
 
-    document.getElementById(\'' . $element->_attributes['id'] . '\').addEventListener(\'blur\', function(ev) {
+    document.getElementById(\'' . $elem->_attributes['id'] . '\').addEventListener(\'blur\', function(ev) {
         ' . $valFunc . '
     });
-    document.getElementById(\'' . $element->_attributes['id'] . '\').addEventListener(\'change\', function(ev) {
+    document.getElementById(\'' . $elem->_attributes['id'] . '\').addEventListener(\'change\', function(ev) {
         ' . $valFunc . '
     });
 ';
+                }
+            }
             $validateJS .= '
       ret = validate_' . $this->_formName . '_' . $escapedElementName.'(frm.elements[\''.$elementName.'\'], \''.$escapedElementName.'\') && ret;
       if (!ret && !first_focus) {

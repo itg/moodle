@@ -2766,7 +2766,7 @@ EOD;
      * @param string $debuginfo Debugging information
      * @return string the HTML to output.
      */
-    public function fatal_error($message, $moreinfourl, $link, $backtrace, $debuginfo = null) {
+    public function fatal_error($message, $moreinfourl, $link, $backtrace, $debuginfo = null, $errorcode = "") {
         global $CFG;
 
         $output = '';
@@ -2795,6 +2795,9 @@ EOD;
             $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
             if (empty($_SERVER['HTTP_RANGE'])) {
                 @header($protocol . ' 404 Not Found');
+            } else if (core_useragent::check_safari_ios_version(602) && !empty($_SERVER['HTTP_X_PLAYBACK_SESSION_ID'])) {
+                // Coax iOS 10 into sending the session cookie.
+                @header($protocol . ' 403 Forbidden');
             } else {
                 // Must stop byteserving attempts somehow,
                 // this is weird but Chrome PDF viewer can be stopped only with 407!
@@ -4134,16 +4137,16 @@ EOD;
      */
     public function context_header($headerinfo = null, $headinglevel = 1) {
         global $DB, $USER, $CFG;
+        require_once($CFG->dirroot . '/user/lib.php');
         $context = $this->page->context;
-        // Make sure to use the heading if it has been set.
-        if (isset($headerinfo['heading'])) {
-            $heading = $headerinfo['heading'];
-        } else {
-            $heading = null;
-        }
+        $heading = null;
         $imagedata = null;
         $subheader = null;
         $userbuttons = null;
+        // Make sure to use the heading if it has been set.
+        if (isset($headerinfo['heading'])) {
+            $heading = $headerinfo['heading'];
+        }
         // The user context currently has images and buttons. Other contexts may follow.
         if (isset($headerinfo['user']) || $context->contextlevel == CONTEXT_USER) {
             if (isset($headerinfo['user'])) {
@@ -4152,29 +4155,42 @@ EOD;
                 // Look up the user information if it is not supplied.
                 $user = $DB->get_record('user', array('id' => $context->instanceid));
             }
+
             // If the user context is set, then use that for capability checks.
             if (isset($headerinfo['usercontext'])) {
                 $context = $headerinfo['usercontext'];
             }
-            // Use the user's full name if the heading isn't set.
-            if (!isset($heading)) {
-                $heading = fullname($user);
+
+            // Only provide user information if the user is the current user, or a user which the current user can view.
+            $canviewdetails = false;
+            if ($user->id == $USER->id || user_can_view_profile($user)) {
+                $canviewdetails = true;
             }
 
-            $imagedata = $this->user_picture($user, array('size' => 100));
-            // Check to see if we should be displaying a message button.
-            if (!empty($CFG->messaging) && $USER->id != $user->id && has_capability('moodle/site:sendmessage', $context)) {
-                $userbuttons = array(
-                    'messages' => array(
-                        'buttontype' => 'message',
-                        'title' => get_string('message', 'message'),
-                        'url' => new moodle_url('/message/index.php', array('id' => $user->id)),
-                        'image' => 'message',
-                        'linkattributes' => message_messenger_sendmessage_link_params($user),
-                        'page' => $this->page
-                    )
-                );
-                $this->page->requires->string_for_js('changesmadereallygoaway', 'moodle');
+            if ($canviewdetails) {
+                // Use the user's full name if the heading isn't set.
+                if (!isset($heading)) {
+                    $heading = fullname($user);
+                }
+
+                $imagedata = $this->user_picture($user, array('size' => 100));
+
+                // Check to see if we should be displaying a message button.
+                if (!empty($CFG->messaging) && $USER->id != $user->id && has_capability('moodle/site:sendmessage', $context)) {
+                    $userbuttons = array(
+                        'messages' => array(
+                            'buttontype' => 'message',
+                            'title' => get_string('message', 'message'),
+                            'url' => new moodle_url('/message/index.php', array('id' => $user->id)),
+                            'image' => 'message',
+                            'linkattributes' => message_messenger_sendmessage_link_params($user),
+                            'page' => $this->page
+                        )
+                    );
+                    $this->page->requires->string_for_js('changesmadereallygoaway', 'moodle');
+                }
+            } else {
+                $heading = null;
             }
         }
 
@@ -4335,7 +4351,7 @@ class core_renderer_cli extends core_renderer {
      * @param string $debuginfo Debugging information
      * @return string A template fragment for a fatal error
      */
-    public function fatal_error($message, $moreinfourl, $link, $backtrace, $debuginfo = null) {
+    public function fatal_error($message, $moreinfourl, $link, $backtrace, $debuginfo = null, $errorcode = "") {
         global $CFG;
 
         $output = "!!! $message !!!\n";
@@ -4410,13 +4426,14 @@ class core_renderer_ajax extends core_renderer {
      * @param string $debuginfo Debugging information
      * @return string A template fragment for a fatal error
      */
-    public function fatal_error($message, $moreinfourl, $link, $backtrace, $debuginfo = null) {
+    public function fatal_error($message, $moreinfourl, $link, $backtrace, $debuginfo = null, $errorcode = "") {
         global $CFG;
 
         $this->page->set_context(null); // ugly hack - make sure page context is set to something, we do not want bogus warnings here
 
         $e = new stdClass();
         $e->error      = $message;
+        $e->errorcode  = $errorcode;
         $e->stacktrace = NULL;
         $e->debuginfo  = NULL;
         $e->reproductionlink = NULL;

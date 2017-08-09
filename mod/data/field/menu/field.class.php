@@ -44,7 +44,7 @@ class data_field_menu extends data_field_base {
         $rawoptions = explode("\n",$this->field->param1);
         foreach ($rawoptions as $option) {
             $option = trim($option);
-            if ($option) {
+            if (strlen($option) > 0) {
                 $options[$option] = $option;
             }
         }
@@ -98,7 +98,8 @@ class data_field_menu extends data_field_base {
         }
 
         $return = html_writer::label(get_string('namemenu', 'data'), 'menuf_'. $this->field->id, false, array('class' => 'accesshide'));
-        $return .= html_writer::select($options, 'f_'.$this->field->id, $content);
+        $return .= html_writer::select($options, 'f_'.$this->field->id, $content, array('' => get_string('menuchoose', 'data')),
+                array('class' => 'custom-select'));
         return $return;
     }
 

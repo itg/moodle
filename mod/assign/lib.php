@@ -118,16 +118,10 @@ function assign_refresh_events($courseid = 0) {
         }
     }
     foreach ($assigns as $assign) {
-        // Use assignment's course column if courseid parameter is not given.
-        if (!$courseid) {
-            $courseid = $assign->course;
-            if (!$course = $DB->get_record('course', array('id' => $courseid), '*')) {
-                continue;
-            }
-        }
-        if (!$cm = get_coursemodule_from_instance('assign', $assign->id, $courseid, false)) {
-            continue;
-        }
+        // Get course and course module for the assignment.
+        list($course, $cm) = get_course_and_cm_from_instance($assign->id, 'assign', $assign->course);
+
+        // Refresh the assignment's calendar events.
         $context = context_module::instance($cm->id);
         $assignment = new assign($context, $cm, $course);
         $assignment->update_calendar($cm->id);
@@ -408,7 +402,7 @@ function assign_print_overview($courses, &$htmlarray) {
         $context = context_module::instance($assignment->coursemodule);
 
         // Does the submission status of the assignment require notification?
-        if (has_capability('mod/assign:submit', $context)) {
+        if (has_capability('mod/assign:submit', $context, null, false)) {
             // Does the submission status of the assignment require notification?
             $submitdetails = assign_get_mysubmission_details_for_print_overview($mysubmissions, $sqlassignmentids,
                     $assignmentidparams, $assignment);
@@ -416,7 +410,7 @@ function assign_print_overview($courses, &$htmlarray) {
             $submitdetails = false;
         }
 
-        if (has_capability('mod/assign:grade', $context)) {
+        if (has_capability('mod/assign:grade', $context, null, false)) {
             // Does the grading status of the assignment require notification ?
             $gradedetails = assign_get_grade_details_for_print_overview($unmarkedsubmissions, $sqlassignmentids,
                     $assignmentidparams, $assignment, $context);
@@ -592,10 +586,14 @@ function assign_get_grade_details_for_print_overview(&$unmarkedsubmissions, $sql
                                              s.userid = g.userid AND
                                              s.assignment = g.assignment AND
                                              g.attemptnumber = s.attemptnumber
+                                   LEFT JOIN {assign} a ON
+                                             a.id = s.assignment
                                        WHERE
                                              ( g.timemodified is NULL OR
-                                             s.timemodified > g.timemodified OR
-                                             g.grade IS NULL ) AND
+                                             s.timemodified >= g.timemodified OR
+                                             g.grade IS NULL OR
+                                             (g.grade = -1 AND
+                                             a.grade < 0)) AND
                                              s.timemodified IS NOT NULL AND
                                              s.status = ? AND
                                              s.latest = 1 AND

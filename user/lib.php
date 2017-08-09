@@ -551,6 +551,15 @@ function user_get_user_details($user, $course = null, array $userfields = array(
         $userdetails['preferences'] = $preferences;
     }
 
+    if ($currentuser or has_capability('moodle/user:viewalldetails', $context)) {
+        $extrafields = ['auth', 'confirmed', 'lang', 'theme', 'timezone', 'mailformat'];
+        foreach ($extrafields as $extrafield) {
+            if (in_array($extrafield, $userfields) && isset($user->$extrafield)) {
+                $userdetails[$extrafield] = $user->$extrafield;
+            }
+        }
+    }
+
     return $userdetails;
 }
 
@@ -828,8 +837,8 @@ function user_get_user_navigation_info($user, $page, $options = array()) {
     if (isset($SESSION->justloggedin)) {
         // Don't unset this flag as login_info still needs it.
         if (!empty($CFG->displayloginfailures)) {
-            // We're already in /user/lib.php, so we don't need to include.
-            if ($count = user_count_login_failures($user)) {
+            // Don't reset the count either, as login_info() still needs it too.
+            if ($count = user_count_login_failures($user, false)) {
 
                 // Get login failures string.
                 $a = new stdClass();
@@ -1134,6 +1143,11 @@ function user_can_view_profile($user, $course = null, $usercontext = null) {
     } else {
         $sharedcourses = enrol_get_shared_courses($USER->id, $user->id, true);
     }
+
+    if (empty($sharedcourses)) {
+        return false;
+    }
+
     foreach ($sharedcourses as $sharedcourse) {
         $coursecontext = context_course::instance($sharedcourse->id);
         if (has_capability('moodle/user:viewdetails', $coursecontext)) {

@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['admindirname'] = 'Adminディレクトリ';
 $string['availablelangs'] = '利用可能な言語パック';
 $string['chooselanguagehead'] = '言語を選択してください。';
-$string['chooselanguagesub'] = 'インストールのみに使用する言語を選択してください。この言語はサイトのデフォルト言語としても使用されます。後でサイト言語を変更することができます。';
+$string['chooselanguagesub'] = 'インストールにのみ使用する言語を選択してください。この言語はサイトのデフォルト言語としても使用されます。後でサイト言語を変更することができます。';
 $string['clialreadyconfigured'] = '設定ファイルconfig.phpはすでに登録されています。このサイトをインストールする場合、admin/cli/install_database.phpを使用してください。';
 $string['clialreadyinstalled'] = '設定ファイルconfig.phpは、すでに登録されています。このサイトをアップグレードする場合、admin/cli/upgrade.phpを使用してください。';
 $string['cliinstallheader'] = 'Moodle {$a} コマンドラインインストールプログラム';
@@ -73,7 +73,7 @@ $string['pathssubdataroot'] = '<p>ユーザによってアップロードされ�
 <p>ウェブからは直接アクセスできないようにしてください。</p>
 <p>現在ディレクトリが存在しない場合、インストレーションプロセスは作成を試みます。</p';
 $string['pathssubdirroot'] = '<p>Moodleコードを含むディレクトリに関するフルパスです。</p>';
-$string['pathssubwwwroot'] = '<p>Moodleにアクセスすることのできるフルウェブアドレスです。例えば、ユーザがブラウザのアドレスバーに入力してMoodleにアクセスするためのアドレスです。</p>
+$string['pathssubwwwroot'] = '<p>Moodleにアクセスすることのできるフルウェブアドレスです。例えばユーザがブラウザのアドレスバーに入力してMoodleにアクセスするためのアドレスです。</p>
 
 <p>複数アドレスを使用してMoodleにアクセスすることはできません。あなたのサイトに複数アドレスからアクセスできる場合、最も簡単なアドレスを選択して、すべてのアドレスにパーマネントリダイレクトを設定してください。</p>
 
@@ -84,11 +84,9 @@ $string['pathsunsecuredataroot'] = 'dataroot ロケーションが安全では�
 $string['pathswrongadmindir'] = 'adminディレクトリがありません。';
 $string['phpextension'] = '{$a} PHP拡張モジュール';
 $string['phpversion'] = 'PHPバージョン';
-$string['phpversionhelp'] = '<p>Moodleには少なくとも4.3.0または5.1.0のPHPバージョンが必要です (5.0.x には既知の多数の問題があります)。</p>
-<p>現在、バージョン {$a} が動作しています。</p>
-<p>PHPをアップグレードするか、新しいバージョンがインストールされているホストに移動してください!<br />
-(5.0.x の場合、anataha
-バージョン 4.4.x にダウングレードすることもできます。)</p>';
+$string['phpversionhelp'] = '<p>Moodleには少なくとも5.4.4のPHPバージョンが必要です (7.x にはエンジンの制限があります)。</p>
+<p>現在、あなたはバージョン {$a} を動作させています。</p>
+<p>PHPをアップグレードするか新しいバージョンのPHPがインストールされているホストに移動する必要があります。</p>';
 $string['welcomep10'] = '{$a->installername} ({$a->installerversion})';
 $string['welcomep20'] = 'インストールが正常に完了して、あなたのコンピュータで <strong>{$a->packname} {$a->packversion}</strong> パッケージが起動されたため、このページが表示されています。おめでとうございます!';
 $string['welcomep30'] = 'このリリース <strong>{$a->installername}</strong> には<strong>Moodle</strong>で環境を作成するアプリケーションが含まれています。すなわち:';

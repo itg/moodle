@@ -75,8 +75,8 @@ if (!array_key_exists($action, $actionoptions)) {
     $action = '';
 }
 
-$PAGE->set_title($course->shortname .': '. $strparticipation);
-$PAGE->set_heading($course->fullname);
+$PAGE->set_title(format_string($course->shortname, true, array('context' => $context)) .': '. $strparticipation);
+$PAGE->set_heading(format_string($course->fullname, true, array('context' => $context)));
 echo $OUTPUT->header();
 
 $uselegacyreader = false; // Use legacy reader with sql_internal_table_reader to aggregate records.
@@ -184,7 +184,6 @@ if (!empty($instanceid) && !empty($roleid)) {
     }
     $table->define_baseurl($baseurl);
 
-    $table->set_attribute('cellpadding','5');
     $table->set_attribute('class', 'generaltable generalbox reporttable');
 
     $table->sortable(true,'lastname','ASC');
@@ -328,7 +327,7 @@ if (!empty($instanceid) && !empty($roleid)) {
 
     $a = new stdClass();
     $a->count = $totalcount;
-    $a->items = $role->name;
+    $a->items = format_string($role->name, true, array('context' => $context));
 
     if ($matchcount != $totalcount) {
         $a->count = $matchcount.'/'.$a->count;
@@ -336,11 +335,13 @@ if (!empty($instanceid) && !empty($roleid)) {
 
     echo '<h2>'.get_string('counteditems', '', $a).'</h2>'."\n";
 
-    echo '<form action="'.$CFG->wwwroot.'/user/action_redir.php" method="post" id="studentsform">'."\n";
-    echo '<div>'."\n";
-    echo '<input type="hidden" name="id" value="'.$id.'" />'."\n";
-    echo '<input type="hidden" name="returnto" value="'. s($PAGE->url) .'" />'."\n";
-    echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />'."\n";
+    if (!empty($CFG->messaging)) {
+        echo '<form action="'.$CFG->wwwroot.'/user/action_redir.php" method="post" id="studentsform">'."\n";
+        echo '<div>'."\n";
+        echo '<input type="hidden" name="id" value="'.$id.'" />'."\n";
+        echo '<input type="hidden" name="returnto" value="'. s($PAGE->url) .'" />'."\n";
+        echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />'."\n";
+    }
 
     foreach ($users as $u) {
         $data = array();
@@ -385,10 +386,10 @@ if (!empty($instanceid) && !empty($roleid)) {
         echo '</div>';
         echo '</div>'."\n";
         echo '</form>'."\n";
-        echo '</div>'."\n";
 
         $PAGE->requires->js_init_call('M.report_participation.init');
     }
+    echo '</div>'."\n";
 }
 
 echo $OUTPUT->footer();

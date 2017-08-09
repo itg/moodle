@@ -80,6 +80,7 @@ class manager {
             }
 
             self::initialise_user_session($isnewsession);
+            self::$sessionactive = true; // Set here, so the session can be cleared if the security check fails.
             self::check_security();
 
             // Link global $USER and $SESSION,
@@ -97,8 +98,6 @@ class manager {
             self::$sessionactive = false;
             throw $ex;
         }
-
-        self::$sessionactive = true;
     }
 
     /**
@@ -770,7 +769,7 @@ class manager {
                 foreach ($authplugins as $authplugin) {
                     /** @var \auth_plugin_base $authplugin*/
                     if ($authplugin->ignore_timeout_hook($user, $user->sid, $user->s_timecreated, $user->s_timemodified)) {
-                        continue;
+                        continue 2;
                     }
                 }
                 self::kill_session($user->sid);

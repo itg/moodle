@@ -361,15 +361,13 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         $newcategory->name = $data->name;
 
         // Validate and set idnumber.
-        if (!empty($data->idnumber)) {
+        if (isset($data->idnumber)) {
             if (core_text::strlen($data->idnumber) > 100) {
                 throw new moodle_exception('idnumbertoolong');
             }
-            if ($DB->record_exists('course_categories', array('idnumber' => $data->idnumber))) {
+            if (strval($data->idnumber) !== '' && $DB->record_exists('course_categories', array('idnumber' => $data->idnumber))) {
                 throw new moodle_exception('categoryidnumbertaken');
             }
-        }
-        if (isset($data->idnumber)) {
             $newcategory->idnumber = $data->idnumber;
         }
 
@@ -484,11 +482,11 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
             $newcategory->name = $data->name;
         }
 
-        if (isset($data->idnumber) && $data->idnumber != $this->idnumber) {
+        if (isset($data->idnumber) && $data->idnumber !== $this->idnumber) {
             if (core_text::strlen($data->idnumber) > 100) {
                 throw new moodle_exception('idnumbertoolong');
             }
-            if ($DB->record_exists('course_categories', array('idnumber' => $data->idnumber))) {
+            if (strval($data->idnumber) !== '' && $DB->record_exists('course_categories', array('idnumber' => $data->idnumber))) {
                 throw new moodle_exception('categoryidnumbertaken');
             }
             $newcategory->idnumber = $data->idnumber;
@@ -628,9 +626,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         }
         // We must add countall to all in case it was the requested ID.
         $all['countall'] = $count;
-        foreach ($all as $key => $children) {
-            $coursecattreecache->set($key, $children);
-        }
+        $coursecattreecache->set_many($all);
         if (array_key_exists($id, $all)) {
             return $all[$id];
         }

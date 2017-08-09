@@ -59,6 +59,13 @@ $CFG->dboptions = array(
     'dbport'    => '',          // the TCP port number to use when connecting
                                 //  to the server. keep empty string for the
                                 //  default port
+    'dbcollation' => 'utf8mb4_unicode_ci', // MySQL has partial and full UTF-8
+                                // support. If you wish to use partial UTF-8
+                                // (three bytes) then set this option to
+                                // 'utf8_unicode_ci', otherwise this option
+                                // can be removed for MySQL (by default it will
+                                // use 'utf8mb4_unicode_ci'. This option should
+                                // be removed for all other databases.
 );
 
 
@@ -248,6 +255,15 @@ $CFG->admin = 'admin';
 //      $CFG->session_memcached_prefix = 'memc.sess.key.';
 //      $CFG->session_memcached_acquire_lock_timeout = 120;
 //      $CFG->session_memcached_lock_expire = 7200;       // Ignored if PECL memcached is below version 2.2.0
+//
+//   Redis session handler (requires redis server and redis extension):
+//      $CFG->session_handler_class = '\core\session\redis';
+//      $CFG->session_redis_host = '127.0.0.1';
+//      $CFG->session_redis_port = 6379;  // Optional.
+//      $CFG->session_redis_database = 0;  // Optional, default is db 0.
+//      $CFG->session_redis_prefix = ''; // Optional, default is don't set one.
+//      $CFG->session_redis_acquire_lock_timeout = 120;
+//      $CFG->session_redis_lock_expire = 7200;
 //
 //   Memcache session handler (requires memcached server and memcache extension):
 //      $CFG->session_handler_class = '\core\session\memcache';

@@ -217,8 +217,8 @@ class core_user_external extends external_api {
                 profile_save_data((object) $user);
             }
 
+            $userobject = (object)$user;
             if ($createpassword) {
-                $userobject = (object)$user;
                 setnew_password_and_mail($userobject);
                 unset_user_preference('create_password', $userobject);
                 set_user_preference('auth_forcepasswordchange', 1, $userobject);
@@ -230,7 +230,7 @@ class core_user_external extends external_api {
             // Preferences.
             if (!empty($user['preferences'])) {
                 foreach ($user['preferences'] as $preference) {
-                    set_user_preference($preference['type'], $preference['value'], $user['id']);
+                    self::set_user_preference($preference['type'], $preference['value'], $userobject);
                 }
             }
 
@@ -415,7 +415,7 @@ class core_user_external extends external_api {
      * @since Moodle 2.2
      */
     public static function update_users($users) {
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
         require_once($CFG->dirroot."/user/lib.php");
         require_once($CFG->dirroot."/user/profile/lib.php"); // Required for customfields related function.
 
@@ -429,6 +429,18 @@ class core_user_external extends external_api {
         $transaction = $DB->start_delegated_transaction();
 
         foreach ($params['users'] as $user) {
+            // First check the user exists.
+            if (!$existinguser = core_user::get_user($user['id'])) {
+                continue;
+            }
+            // Check if we are trying to update an admin.
+            if ($existinguser->id != $USER->id and is_siteadmin($existinguser) and !is_siteadmin($USER)) {
+                continue;
+            }
+            // Other checks (deleted, remote or guest users).
+            if ($existinguser->deleted or is_mnet_remote_user($existinguser) or isguestuser($existinguser->id)) {
+                continue;
+            }
             user_update_user($user, true, false);
             // Update user custom fields.
             if (!empty($user['customfields'])) {
@@ -447,7 +459,7 @@ class core_user_external extends external_api {
             // Preferences.
             if (!empty($user['preferences'])) {
                 foreach ($user['preferences'] as $preference) {
-                    set_user_preference($preference['type'], $preference['value'], $user['id']);
+                    self::set_user_preference($preference['type'], $preference['value'], $existinguser);
                 }
             }
         }
@@ -1339,4 +1351,33 @@ class core_user_external extends external_api {
         );
     }
 
+    /**
+     * Validates preference value and updates the user preference
+     *
+     * @param string $name
+     * @param string $value
+     * @param stdClass $user
+     */
+    protected static function set_user_preference($name, $value, $user) {
+        $preferences = array(
+            'auth_forcepasswordchange' => PARAM_BOOL,
+            'htmleditor' => PARAM_COMPONENT,
+            'usemodchooser' => PARAM_BOOL,
+            'badgeprivacysetting' => PARAM_BOOL,
+            'blogpagesize' => PARAM_INT,
+            'forum_markasreadonnotification' => PARAM_INT,
+            'calendar_timeformat' => PARAM_NOTAGS,
+            'calendar_startwday' => PARAM_INT,
+            'calendar_maxevents' => PARAM_INT,
+            'calendar_lookahead' => PARAM_INT,
+            'calendar_persistflt' => PARAM_INT
+        );
+        if (isset($preferences[$name])) {
+            $value = clean_param($value, $preferences[$name]);
+            if ($preferences[$name] == PARAM_BOOL) {
+                $value = (int)$value;
+            }
+            set_user_preference($name, $value, $user);
+        }
+    }
 }
