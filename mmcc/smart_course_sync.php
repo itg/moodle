@@ -272,7 +272,7 @@ INNER JOIN terms t ON cs.term = t.`name`
 
 WHERE 'P' <> cs.current_status
 AND cs.synonym IS NOT NULL
-AND 30 >= DATEDIFF(t.start, NOW())
+AND 60 >= DATEDIFF(t.start, NOW())
 AND -7 <= DATEDIFF(t.end, NOW())
 EOD;
 
