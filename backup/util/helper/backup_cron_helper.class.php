@@ -127,7 +127,7 @@ abstract class backup_cron_automated_helper {
                 $showtime = date('r', $nextstarttime);
             }
 
-            $rs = $DB->get_recordset('course');
+            $rs = $DB->get_recordset('course', NULL, "id DESC");
             foreach ($rs as $course) {
                 $backupcourse = $DB->get_record('backup_courses', array('courseid' => $course->id));
                 if (!$backupcourse) {
