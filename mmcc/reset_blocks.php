@@ -16,11 +16,11 @@ global $DB;
 // Grab the courses we need to reset
 // Fall 2013 courses:
 // 		$conditions = array('category'=>'4');
-// A single course by synonym:
+// A single course by Course Section ID:
 // 		$conditions = array('idnumber'=>'45663');
 
 //$conditions = array('category'=>'111');                //Get courses by category
-//$conditions = array('idnumber'=>'314159265');          //Get courses by idnumber/synonym
+//$conditions = array('idnumber'=>'314159265');          //Get courses by idnumber/Course Section ID
 
 //$conditions = array('id'=>'16442');                    //Get courses by course id (e.g. from URL)
 //$conditions = array('id'=>'17265');                    //Get courses by course id (e.g. from URL)
