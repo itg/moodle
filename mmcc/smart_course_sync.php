@@ -266,12 +266,11 @@ function get_courses_from_smart( $handle=NULL ) {
     $courses = array();
 
     $course_sql =<<<EOD
-SELECT cs.id, cs.synonym AS idnumber, cs.`subject`, cs.course, cs.section, cs.term AS category_name, t.`description` AS category_description, cs.synonym, cs.title, cs.start_date, cs.end_date, cs.meeting_info, cs.description AS summary
+SELECT cs.id, cs.id AS idnumber, cs.`subject`, cs.course, cs.section, cs.term AS category_name, t.`description` AS category_description, cs.synonym, cs.title, cs.start_date, cs.end_date, cs.meeting_info, cs.description AS summary
 FROM course_sections cs
 INNER JOIN terms t ON cs.term = t.`name`
 
 WHERE 'P' <> cs.current_status
-AND cs.synonym IS NOT NULL
 AND (30 >= DATEDIFF(t.prestart, NOW()) OR 60 >= DATEDIFF(t.start, NOW()))
 AND -7 <= DATEDIFF(t.end, NOW())
 EOD;
