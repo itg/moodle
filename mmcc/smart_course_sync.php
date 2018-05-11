@@ -296,7 +296,7 @@ function extract_course( $row=NULL) {
         $summary .= "<p>Meeting information:</p><ul><li>" . $meeting_info . "</li></ul>";
         $summary = str_replace("<li></li>", "", $summary);
 
-        $shortname = $row["subject"] . '.' . $row["course"] . '.' . $row["section"] . '.' . $row["category_name"] . ' (' . $row["idnumber"] . ')';
+        $shortname = $row["subject"] . '.' . $row["course"] . '.' . $row["section"] . '.' . $row["category_name"] . ' (' . $row["synonym"] . ')';
         $course = array(
             "id"                    => $row["id"],
             "idnumber"              => $row["idnumber"],
