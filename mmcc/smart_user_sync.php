@@ -103,7 +103,7 @@ INNER JOIN student_memberships sm ON u.id = sm.user_id
 INNER JOIN course_sections cs ON sm.course_section_id = cs.id
 INNER JOIN terms t ON t.`name` = cs.term
 
-WHERE 30 >= DATEDIFF(t.start, NOW())
+WHERE (30 >= DATEDIFF(t.prestart, NOW()) OR 60 >= DATEDIFF(t.start, NOW()))
 AND -7 <= DATEDIFF(t.end, NOW())
 EOD;
 
@@ -114,7 +114,7 @@ INNER JOIN instructor_memberships im ON u.id = im.user_id
 INNER JOIN course_sections cs ON im.course_section_id = cs.id
 INNER JOIN terms t ON t.`name` = cs.term
 
-WHERE 30 >= DATEDIFF(t.start, NOW())
+WHERE (30 >= DATEDIFF(t.prestart, NOW()) OR 60 >= DATEDIFF(t.start, NOW()))
 AND -7 <= DATEDIFF(t.end, NOW())
 EOD;
 
