@@ -271,7 +271,7 @@ FROM course_sections cs
 INNER JOIN terms t ON cs.term = t.`name`
 
 WHERE 'P' <> cs.current_status
-AND (30 >= DATEDIFF(t.prestart, NOW()) OR 60 >= DATEDIFF(t.start, NOW()))
+AND (180 >= DATEDIFF(t.prestart, NOW()) OR 60 >= DATEDIFF(t.start, NOW()))
 AND -7 <= DATEDIFF(t.end, NOW())
 EOD;
 
