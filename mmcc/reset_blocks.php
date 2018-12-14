@@ -12,23 +12,9 @@ require_once($CFG->libdir.'/blocklib.php');
 require_once($CFG->dirroot. '/course/lib.php');
 
 global $DB;
+require_once($CFG->dirroot . "/mmcc/smart_utils.php");
 
-// Grab the courses we need to reset
-// Fall 2013 courses:
-// 		$conditions = array('category'=>'4');
-// A single course by Course Section ID:
-// 		$conditions = array('idnumber'=>'45663');
-
-//$conditions = array('category'=>'111');                //Get courses by category
-//$conditions = array('idnumber'=>'314159265');          //Get courses by idnumber/Course Section ID
-
-//$conditions = array('id'=>'16442');                    //Get courses by course id (e.g. from URL)
-//$conditions = array('id'=>'17265');                    //Get courses by course id (e.g. from URL)
-//$conditions = array('id'=>'16622');                    //Get courses by course id (e.g. from URL)
-//$conditions = array('id'=>'16436');                    //Get courses by course id (e.g. from URL)
-//$conditions = array('id'=>'15501'); // example of course with html blocks                    //Get courses by course id (e.g. from URL)
-
-//$conditions = array('id'=>'16456'); // Goffnett 2015WI
+echo "Started at ". date('Y-m-d h:i:s a', time());
 
 // These four blocks aren't enough!
 $blocks_indicating_reset_needed =  array('calendar_upcoming', 'news_items', 'recent_activity', 'search_forums');
@@ -38,15 +24,42 @@ sort($blocks_indicating_reset_needed);
 $default_block_set =  array('clampmail', 'participants', 'activity_modules', 'search_forums', 'filtered_course_list', 'news_items', 'quickset', 'calendar_upcoming', 'recent_activity');
 sort($default_block_set);
 
-$conditions = array('category'=>'128'); //2017WI
+$conditions = NULL;
+// Grab the courses we need to reset
+// Fall 2013 courses:
+//              $conditions = array('category'=>'4');
+// A single course by Course Section ID:
+//              $conditions = array('idnumber'=>'45663');
 
-//$conditions = array('id'=>'15429');                    //Get courses by course id (e.g. from URL)
+//$conditions = array('category'=>'111');                //Get courses by category
+//$conditions = array('idnumber'=>'314159265');          //Get courses by idnumber/Course Section ID
 
-$num_matched_courses = $DB->count_records('course', $conditions);
-echo "Started at ". date('Y-m-d h:i:s a', time());
+//$conditions = array('id'=>'16442');                    //Get courses by course id (e.g. from URL)
+//$conditions = array('id'=>'15501'); // example of course with html blocks                    //Get courses by course id (e.g. from URL)
+
+//$conditions = array('id'=>'16456'); // Goffnett 2015WI
+
+//$conditions = array('category'=>'20'); //2017WI
+
+if (!is_null($conditions)) {
+    echo "\nUsing specified conditions...\n";
+    $num_matched_courses = $DB->count_records('course', $conditions);
+
+    $courses_rs = $DB->get_recordset('course', $conditions, '', 'id, category, fullname');
+}
+else {
+    echo "\nUsing SMART date logic...\n";
+    $current_categories = smart_active_moodle_categories();
+
+    $num_matched_courses = 0;
+    foreach($current_categories as $category) {
+        $conditions = array('category'=>$category);
+        $num_matched_courses += $DB->count_records('course', $conditions);
+    }
+
+    $courses_rs = $DB->get_recordset_list('course', 'category', $current_categories, '', 'id, category, fullname');
+}
 echo "\nProcessing $num_matched_courses course(s)\n";
-
-$courses_rs = $DB->get_recordset('course', $conditions, '', 'id, category, fullname');
 
 $change_count = 0;
 $course_count = 0;
